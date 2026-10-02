@@ -14,7 +14,7 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory dist
 
 Open <http://127.0.0.1:4173/>. An HTTP server is required for JavaScript modules, component models and the location dataset. Opening HTML through a file URL is not supported.
 
-Serve `dist/` at the domain root. Default GitHub project Pages subpaths require base path changes. Keep the committed `dist/` directory: the generator reads the homepage as a template.
+Serve `dist/` at the domain root. The GitHub Pages workflow builds a separate `_site/` directory with the required project subfolder paths. Keep the committed `dist/` directory: the generator reads the homepage as a template.
 
 No npm install, framework build or third party API key is required. Node.js is used only for optional JavaScript syntax checks.
 
@@ -85,7 +85,7 @@ This repository imports website source snapshot `31ff70dfb40372a237c6713989b94d7
 
 <https://sampson-heavy-diesel.ft-64db.chatgpt.site/>
 
-A GitHub push does not itself change the audience or publish a Sites deployment. Preserve the existing Sites project identifier when using the Sites publishing workflow.
+A GitHub push does not change the audience or publish a Sites deployment. The separate GitHub Pages review workflow publishes website changes from `main` to the public review URL described below. Preserve the existing Sites project identifier when using the Sites publishing workflow.
 
 Public launch is pending website approval and confirmed owner details:
 
@@ -101,3 +101,22 @@ Domain setup and Google Business Profile creation follow website approval. Do no
 Retain the model, font, Three.js and Meshoptimizer licence files and credits under `dist/assets/` and `dist/credits/`. Model sources and adaptations are documented in the website and source records. Vicmap data is attributed to the State of Victoria, Department of Transport and Planning under CC BY 4.0. The supplied business portrait, commissioned logo and truck illustration remain distinct from third party asset licences.
 
 No blanket licence for the business branding or the entire repository is granted by the included third party licence files.
+
+## GitHub Pages review deployment
+
+Review URL: <https://muhammadfaizalns.github.io/sampsondieselservices/>
+
+In repository Settings, open Pages and select **GitHub Actions** as the source. The `Deploy review to GitHub Pages` workflow deploys relevant changes pushed to `main`. To republish manually, open Actions, select that workflow and choose **Run workflow** on `main`.
+
+The workflow audits the source, runs deployment regression tests, builds `_site/`, then uploads and deploys that directory. It reads the actual site URL from GitHub Pages configuration. `dist/` and the existing Sites deployment remain unchanged.
+
+The review builder adapts internal page links, CSS fonts, application data and model requests, canonical URLs, social metadata, structured data and the sitemap for the project subfolder. Every HTML page gets `noindex, nofollow, noarchive`. This discourages search indexing but does not provide access control: the GitHub Pages review website is public.
+
+To build and test the review artifact locally:
+
+```sh
+python3 -m unittest discover -s tests -v
+python3 scripts/build-github-pages.py --site-url https://muhammadfaizalns.github.io/sampsondieselservices/
+```
+
+`_site/` is generated and ignored by Git. The builder replaces only an output directory bearing its own marker; it refuses to overwrite unrelated directories. Keep the review workflow and indexing policy separate from the approved public business launch.

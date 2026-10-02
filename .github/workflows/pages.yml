@@ -1,0 +1,56 @@
+name: Deploy review to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'dist/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+      - name: Read Pages configuration
+        id: pages
+        uses: actions/configure-pages@v5
+      - name: Validate website and deployment builder
+        run: |
+          python3 scripts/audit-site.py
+          python3 -m unittest discover -s tests -v
+          for file in dist/components.js dist/coverage.js dist/gearbox-loader.js dist/gearbox.js dist/motion.js; do
+            node --check "$file"
+          done
+      - name: Build review artifact
+        env:
+          PAGES_URL: ${{ steps.pages.outputs.base_url }}
+        run: python3 scripts/build-github-pages.py --site-url "$PAGES_URL"
+      - name: Upload website artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish review website
+        id: deployment
+        uses: actions/deploy-pages@v4
