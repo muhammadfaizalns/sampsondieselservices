@@ -1,0 +1,16 @@
+# Local machine files
+.DS_Store
+Thumbs.db
+__pycache__/
+*.py[cod]
+
+# Local environments and credentials
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+node_modules/
+*.log
+
+# Keep shipped dist/ assets and .openai/hosting.json tracked.

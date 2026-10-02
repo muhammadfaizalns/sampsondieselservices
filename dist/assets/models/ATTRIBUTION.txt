@@ -1,0 +1,18 @@
+Artec 3D model credits
+
+Turbine by Artec 3D
+https://www.artec3d.com/3d-models/turbine
+
+Dual-clutch gearbox by Artec 3D
+https://www.artec3d.com/3d-models/dual-clutch-gearbox
+
+Four-cylinder engine by Artec 3D
+https://www.artec3d.com/3d-models/four-cylinder-engine
+
+Each original downloaded archive includes a Creative Commons Attribution 3.0 Unported license:
+https://creativecommons.org/licenses/by/3.0/
+The current publisher pages also offer these models under Creative Commons Attribution 4.0 International:
+https://creativecommons.org/licenses/by/4.0/
+
+Original licence included as LICENSE.txt.
+Engine changes made for web display: mesh simplified to 300,000 triangles, converted to GLB, smooth normals calculated, neutral metal material applied. Gearbox and turbine changes: geometry simplified, converted to GLB and compressed with Meshopt. Gearbox texture resized and converted to WebP. Materials, lighting and camera motion adapted for all three components.

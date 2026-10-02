@@ -1,0 +1,334 @@
+[
+  {
+    "slug": "engine-piston",
+    "title": "Engine piston",
+    "url": "https://cdn.artec3d.com/content-hub-3dmodels/piston.zip?VersionId=2jDe_09QN.2o.itXdYMHV6p1eyy99vBi",
+    "source_file": "engine-piston/Piston/Piston.obj",
+    "source_vertices": 2940793,
+    "source_triangles": 5722232,
+    "bounds": [
+      [
+        -49.47193,
+        -31.256409,
+        -1.1429749
+      ],
+      [
+        63.364727,
+        69.44333,
+        112.36178
+      ]
+    ],
+    "extents": [
+      112.836657,
+      100.69973900000001,
+      113.5047549
+    ],
+    "source_units": "not explicitly declared; source values are consistent with millimetres",
+    "source_page": "https://www.artec3d.com/3d-models/engine-piston",
+    "publisher_license": "CC-BY-4.0",
+    "publisher_license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "creator": "Artec 3D",
+    "retrieved": "2026-10-01",
+    "included_license": "CC-BY-3.0",
+    "included_license_files": [
+      "engine-piston/Piston/license.txt"
+    ],
+    "changes": "Simplified for web display; GLB conversion with smooth normals and Draco compression; metal material applied; source texture retained and limited to 1024px where available. Original coordinates preserved. Original texture compressed to JPEG quality85.",
+    "output_triangles": 179996,
+    "output_file": "engine-piston.glb",
+    "output_bytes": 934916,
+    "output_sha256": "a81b4b8fd486db7b59d37e0905ce0d53a9b6dcd71090b3a82a88c7d4f04ec628",
+    "has_texture": true,
+    "meshopt_file": "meshopt/engine-piston.glb",
+    "meshopt_bytes": 1435584,
+    "meshopt_sha256": "235331ff9a6ad8ad95d8118343129d297145b9961fe3e22da5916583184e3ee4",
+    "meshopt_extensions_required": [
+      "EXT_meshopt_compression",
+      "KHR_mesh_quantization"
+    ]
+  },
+  {
+    "slug": "crankshaft-hd",
+    "title": "Crankshaft HD",
+    "url": "https://cdn.artec3d.com/content-hub-3dmodels/crankshaft-hd-obj.zip?VersionId=z0Nj..twcXzhwMmw94oS_cehPECWqK0k",
+    "source_file": "crankshaft-hd/Crankshaft HD.obj",
+    "source_vertices": 713926,
+    "source_triangles": 1427840,
+    "bounds": [
+      [
+        -448.206696,
+        -98.958801,
+        -93.730003
+      ],
+      [
+        450.815491,
+        109.481499,
+        94.211502
+      ]
+    ],
+    "extents": [
+      899.022187,
+      208.44029999999998,
+      187.941505
+    ],
+    "source_units": "not explicitly declared; source values are consistent with millimetres",
+    "source_page": "https://www.artec3d.com/3d-models/crankshaft-hd",
+    "publisher_license": "CC-BY-4.0",
+    "publisher_license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "creator": "Artec 3D",
+    "retrieved": "2026-10-01",
+    "included_license": "CC-BY-3.0",
+    "included_license_files": [
+      "crankshaft-hd/license.txt"
+    ],
+    "changes": "Simplified for web display; GLB conversion with smooth normals and Draco compression; metal material applied; source texture retained and limited to 1024px where available. Original coordinates preserved.",
+    "output_triangles": 180000,
+    "output_file": "crankshaft-hd.glb",
+    "output_bytes": 421312,
+    "output_sha256": "71f3b14f585ae051661931a96db776a7b618145e88b06a5e9a0958c164043ec6",
+    "has_texture": false,
+    "meshopt_file": "meshopt/crankshaft-hd.glb",
+    "meshopt_bytes": 707444,
+    "meshopt_sha256": "2a3a9be29ee326ba1acc1a3343cf507addabbb97e187de9930824c9bb2033375",
+    "meshopt_extensions_required": [
+      "EXT_meshopt_compression",
+      "KHR_mesh_quantization"
+    ]
+  },
+  {
+    "slug": "automotive-water-pump",
+    "title": "Automotive water pump",
+    "url": "https://cdn.artec3d.com/content-hub-3dmodels/automotive_water_pump.zip?VersionId=feZTo8heWqh55zha2dLDM3tLQQuJeVPK",
+    "source_file": "automotive-water-pump/Automotive water pump.obj",
+    "source_vertices": 499974,
+    "source_triangles": 1000000,
+    "bounds": [
+      [
+        -71.396103,
+        -63.104301,
+        -49.6968
+      ],
+      [
+        71.396103,
+        63.104301,
+        49.6968
+      ]
+    ],
+    "extents": [
+      142.792206,
+      126.208602,
+      99.3936
+    ],
+    "source_units": "not explicitly declared; source values are consistent with millimetres",
+    "source_page": "https://www.artec3d.com/3d-models/automotive-water-pump",
+    "publisher_license": "CC-BY-4.0",
+    "publisher_license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "creator": "Artec 3D",
+    "retrieved": "2026-10-01",
+    "included_license": null,
+    "included_license_files": [],
+    "changes": "Simplified for web display; GLB conversion with smooth normals and Draco compression; metal material applied; source texture retained and limited to 1024px where available. Original coordinates preserved.",
+    "output_triangles": 180000,
+    "output_file": "automotive-water-pump.glb",
+    "output_bytes": 481180,
+    "output_sha256": "850edc0715e6863067cba910a1fe0df33e7981b6537d72654a3c366fb72e5a0f",
+    "has_texture": false,
+    "meshopt_file": "meshopt/automotive-water-pump.glb",
+    "meshopt_bytes": 757272,
+    "meshopt_sha256": "3ef2422ff67db2da6fffc96ebeea6c0a7a5eeb95fce3e60af28abd78e3c267c0",
+    "meshopt_extensions_required": [
+      "EXT_meshopt_compression",
+      "KHR_mesh_quantization"
+    ]
+  },
+  {
+    "slug": "gear",
+    "title": "Gear",
+    "url": "https://cdn.artec3d.com/content-hub-3dmodels/gear_ply.zip?VersionId=2.8p3bA3bozjAWIzyiYoyY8aKUIjyRbj",
+    "source_file": "gear/Gear PLY/gear.ply",
+    "source_vertices": 250000,
+    "source_triangles": 500000,
+    "bounds": [
+      [
+        -44.254459381103516,
+        -49.44971466064453,
+        -27.580480575561523
+      ],
+      [
+        49.244441986083984,
+        48.246246337890625,
+        30.67220687866211
+      ]
+    ],
+    "extents": [
+      93.4989013671875,
+      97.69596099853516,
+      58.25268745422363
+    ],
+    "source_units": "not explicitly declared; source values are consistent with millimetres",
+    "source_page": "https://www.artec3d.com/3d-models/gear",
+    "publisher_license": "CC-BY-4.0",
+    "publisher_license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "creator": "Artec 3D",
+    "retrieved": "2026-10-01",
+    "included_license": "CC-BY-3.0",
+    "included_license_files": [
+      "gear/Gear PLY/license.txt"
+    ],
+    "changes": "Simplified for web display; GLB conversion with smooth normals and Draco compression; metal material applied; source texture retained and limited to 1024px where available. Original coordinates preserved.",
+    "output_triangles": 180000,
+    "output_file": "gear.glb",
+    "output_bytes": 477892,
+    "output_sha256": "63b8abd15437ec1b480cc450f5f981e6f6119a19b877d8e520be45bab3edbc39",
+    "has_texture": false,
+    "meshopt_file": "meshopt/gear.glb",
+    "meshopt_bytes": 753236,
+    "meshopt_sha256": "5b110acd91850d6ba014b1eefe62b7763e9be3a9b3489cc46152623168cd329d",
+    "meshopt_extensions_required": [
+      "EXT_meshopt_compression",
+      "KHR_mesh_quantization"
+    ]
+  },
+  {
+    "slug": "steering-joint",
+    "title": "Steering joint",
+    "url": "https://cdn.artec3d.com/content-hub-3dmodels/car_part-ply.zip?VersionId=MS6gtk5dRoMtD61dv7.FY2tsiHNmGHmv",
+    "source_file": "steering-joint/Car part-ply/Car part-ply.ply",
+    "source_vertices": 400004,
+    "source_triangles": 800000,
+    "bounds": [
+      [
+        -23.890939712524414,
+        -42.21855926513672,
+        -2.5066771507263184
+      ],
+      [
+        22.92587661743164,
+        192.1900634765625,
+        74.1588363647461
+      ]
+    ],
+    "extents": [
+      46.816816329956055,
+      234.40862274169922,
+      76.66551351547241
+    ],
+    "source_units": "not explicitly declared; source values are consistent with millimetres",
+    "source_page": "https://www.artec3d.com/3d-models/steering-joint",
+    "publisher_license": "CC-BY-4.0",
+    "publisher_license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "creator": "Artec 3D",
+    "retrieved": "2026-10-01",
+    "included_license": "CC-BY-3.0",
+    "included_license_files": [
+      "steering-joint/Car part-ply/license.txt"
+    ],
+    "changes": "Simplified for web display; GLB conversion with smooth normals and Draco compression; metal material applied; source texture retained and limited to 1024px where available. Original coordinates preserved.",
+    "output_triangles": 180000,
+    "output_file": "steering-joint.glb",
+    "output_bytes": 419616,
+    "output_sha256": "e255dd29a20cf7f6dba3f614cd868c5b6dc4a4a594c0fc9188f8fc0d84ccf50e",
+    "has_texture": false,
+    "meshopt_file": "meshopt/steering-joint.glb",
+    "meshopt_bytes": 709324,
+    "meshopt_sha256": "d33606554fe711e8229104df5cbee987fad688bc680dc75093c73b52878cad25",
+    "meshopt_extensions_required": [
+      "EXT_meshopt_compression",
+      "KHR_mesh_quantization"
+    ]
+  },
+  {
+    "slug": "suspension-bracket",
+    "title": "Suspension bracket",
+    "url": "https://cdn.artec3d.com/content-hub-3dmodels/metal-part-2_0.zip?VersionId=tQ0eRCMPFqF87.9mhJ1ihjjsjZ8t.KYq",
+    "source_file": "suspension-bracket/model/Metal part_2.obj",
+    "source_vertices": 3050758,
+    "source_triangles": 6101564,
+    "bounds": [
+      [
+        -226.434296,
+        -152.086899,
+        -75.1483
+      ],
+      [
+        226.434296,
+        152.073807,
+        75.148201
+      ]
+    ],
+    "extents": [
+      452.868592,
+      304.160706,
+      150.296501
+    ],
+    "source_units": "not explicitly declared; source values are consistent with millimetres",
+    "source_page": "https://www.artec3d.com/3d-models/suspension-bracket",
+    "publisher_license": "CC-BY-4.0",
+    "publisher_license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "creator": "Artec 3D",
+    "retrieved": "2026-10-01",
+    "included_license": null,
+    "included_license_files": [],
+    "changes": "Simplified for web display; GLB conversion with smooth normals and Draco compression; metal material applied; source texture retained and limited to 1024px where available. Original coordinates preserved.",
+    "output_triangles": 180000,
+    "output_file": "suspension-bracket.glb",
+    "output_bytes": 433452,
+    "output_sha256": "39233aa270ea82b6d9b5b9912a122c035070e22e41409ce38625d2a3d05e5eb0",
+    "has_texture": false,
+    "meshopt_file": "meshopt/suspension-bracket.glb",
+    "meshopt_bytes": 703068,
+    "meshopt_sha256": "68d2c1f2e0128554c0fff45b5487b53f60153dcbbecce72c0bd30a9403fdc37e",
+    "meshopt_extensions_required": [
+      "EXT_meshopt_compression",
+      "KHR_mesh_quantization"
+    ]
+  },
+  {
+    "slug": "delphi-compressor",
+    "title": "Delphi compressor",
+    "url": "https://cdn.artec3d.com/content-hub-3dmodels/compressor_stl_0.zip?VersionId=c6_RIGRxAlJWEBal3idaM7oxNrdbZ0l3",
+    "source_file": "delphi-compressor/Compressor.stl",
+    "source_vertices": 337359,
+    "source_triangles": 674742,
+    "bounds": [
+      [
+        -88.40067291259766,
+        -57.361976623535156,
+        -115.90127563476562
+      ],
+      [
+        109.48445892333984,
+        104.33128356933594,
+        22.240602493286133
+      ]
+    ],
+    "extents": [
+      197.8851318359375,
+      161.6932601928711,
+      138.14187812805176
+    ],
+    "source_units": "not explicitly declared; source values are consistent with millimetres",
+    "source_page": "https://www.artec3d.com/3d-models/delphi-compressor",
+    "publisher_license": "CC-BY-4.0",
+    "publisher_license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "creator": "Artec 3D",
+    "retrieved": "2026-10-01",
+    "included_license": "CC-BY-3.0",
+    "included_license_files": [
+      "delphi-compressor/license.txt"
+    ],
+    "changes": "Simplified for web display; GLB conversion with smooth normals and Draco compression; metal material applied; source texture retained and limited to 1024px where available. Original coordinates preserved.",
+    "output_triangles": 180000,
+    "output_file": "delphi-compressor.glb",
+    "output_bytes": 471800,
+    "output_sha256": "5733f1c4346eee47a8475f1caccd44112de1abff37db7182712096d51ac93a1b",
+    "has_texture": false,
+    "meshopt_file": "meshopt/delphi-compressor.glb",
+    "meshopt_bytes": 747124,
+    "meshopt_sha256": "d797c64235ff048df25ef5249b394f08d2b5df025d82b3853f67d51779465f6b",
+    "meshopt_extensions_required": [
+      "EXT_meshopt_compression",
+      "KHR_mesh_quantization"
+    ]
+  }
+]

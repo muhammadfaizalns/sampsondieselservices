@@ -1,0 +1,32 @@
+{
+  "title": "Victorian locality and postcode lookup data",
+  "source": "Vicmap Address REST API",
+  "publisher": "State of Victoria, Department of Transport and Planning",
+  "source_url": "https://discover.data.vic.gov.au/en_AU/dataset/vicmap-address-rest-api",
+  "api": "https://corp-gis.mapshare.vic.gov.au/arcgis/rest/services/Mapshare/PropertyAndParcelADD/MapServer/3/query",
+  "query": {
+    "where": "state='VIC' AND postcode IS NOT NULL",
+    "outFields": "locality_name,postcode",
+    "returnGeometry": false,
+    "returnDistinctValues": true,
+    "orderByFields": "locality_name,postcode",
+    "resultRecordCount": 2000,
+    "resultOffset": [
+      0,
+      2000
+    ]
+  },
+  "license": "Creative Commons Attribution 4.0 International",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "retrieved": "2026-10-01",
+  "rows": 2988,
+  "localities": 2973,
+  "postcodes": 694,
+  "transformations": [
+    "Selected distinct locality and postcode pairs for state VIC",
+    "Excluded NOT NAMED locality entries and missing or invalid four digit postcodes",
+    "Removed duplicates and title cased display names",
+    "Sorted alphabetically"
+  ],
+  "limitations": "Derived from property addresses; not Australia Post delivery validation. No street addresses or coordinates included. No completeness guarantee."
+}

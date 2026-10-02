@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://sampson-heavy-diesel.ft-64db.chatgpt.site/sitemap.xml

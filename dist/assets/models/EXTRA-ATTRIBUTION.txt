@@ -1,0 +1,43 @@
+Engine piston by Artec 3D
+https://www.artec3d.com/3d-models/engine-piston
+Creative Commons Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+Simplified for web display; GLB conversion with smooth normals and Draco compression; metal material applied; source texture retained and limited to 1024px where available. Original coordinates preserved. Original texture compressed to JPEG quality85.
+
+Crankshaft HD by Artec 3D
+https://www.artec3d.com/3d-models/crankshaft-hd
+Creative Commons Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+Simplified for web display; GLB conversion with smooth normals and Draco compression; metal material applied; source texture retained and limited to 1024px where available. Original coordinates preserved.
+
+Automotive water pump by Artec 3D
+https://www.artec3d.com/3d-models/automotive-water-pump
+Creative Commons Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+Simplified for web display; GLB conversion with smooth normals and Draco compression; metal material applied; source texture retained and limited to 1024px where available. Original coordinates preserved.
+
+Gear by Artec 3D
+https://www.artec3d.com/3d-models/gear
+Creative Commons Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+Simplified for web display; GLB conversion with smooth normals and Draco compression; metal material applied; source texture retained and limited to 1024px where available. Original coordinates preserved.
+
+Steering joint by Artec 3D
+https://www.artec3d.com/3d-models/steering-joint
+Creative Commons Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+Simplified for web display; GLB conversion with smooth normals and Draco compression; metal material applied; source texture retained and limited to 1024px where available. Original coordinates preserved.
+
+Suspension bracket by Artec 3D
+https://www.artec3d.com/3d-models/suspension-bracket
+Creative Commons Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+Simplified for web display; GLB conversion with smooth normals and Draco compression; metal material applied; source texture retained and limited to 1024px where available. Original coordinates preserved.
+
+Delphi compressor by Artec 3D
+https://www.artec3d.com/3d-models/delphi-compressor
+Creative Commons Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+Simplified for web display; GLB conversion with smooth normals and Draco compression; metal material applied; source texture retained and limited to 1024px where available. Original coordinates preserved.
+
+Web versions transcoded to Meshopt compression without further geometry simplification. Materials, light and camera views adapted.
