@@ -33,8 +33,11 @@ class PagesBuildTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             output = Path(temporary) / 'review'
             result = pages.build(source, output, 'https://muhammadfaizalns.github.io/sampsondieselservices/')
-            self.assertEqual(result['html_files'], 13)
+            self.assertEqual(result['html_files'], 15)
             self.assertEqual(result['models'], 10)
+            service_index = (output / 'services/index.html').read_text()
+            self.assertIn('/sampsondieselservices/services/heavy-equipment-servicing/', service_index)
+            self.assertIn('/sampsondieselservices/services/agricultural-machinery-servicing/', service_index)
             self.assertIn('`/sampsondieselservices/assets/models/${components[index].file}.glb`', (output / 'gearbox.js').read_text())
             self.assertIn("'./components.js'", (output / 'gearbox.js').read_text())
             self.assertIn('/sampsondieselservices/assets/fonts/', (output / 'assets/fonts/fonts.css').read_text())

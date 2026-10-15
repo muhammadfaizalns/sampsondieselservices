@@ -2,7 +2,7 @@ export const components = [
   {
     "file": "engine",
     "name": "Engine block",
-    "detail": "Cylinder bores. Oil galleries. The heart of it.",
+    "detail": "Cylinder bores and oil galleries.",
     "source": "https://www.artec3d.com/3d-models/four-cylinder-engine",
     "rotation": [
       1.57079632679,
@@ -15,7 +15,7 @@ export const components = [
   {
     "file": "transmission",
     "name": "Transmission housing",
-    "detail": "Cast housing. Bearing seats. Every bolt.",
+    "detail": "Cast housing, bearing seats and mounting points.",
     "source": "https://www.artec3d.com/3d-models/dual-clutch-gearbox",
     "rotation": [
       -1.57079632679,
@@ -28,7 +28,7 @@ export const components = [
   {
     "file": "turbine",
     "name": "Turbine wheel",
-    "detail": "Fine blades. Serious engineering.",
+    "detail": "Blade geometry and central hub.",
     "source": "https://www.artec3d.com/3d-models/turbine",
     "rotation": [
       -1.57079632679,
@@ -80,7 +80,7 @@ export const components = [
   {
     "file": "gear",
     "name": "Drive gear",
-    "detail": "Tooth faces. Hub. The detail that matters.",
+    "detail": "Gear teeth, hub and bore.",
     "source": "https://www.artec3d.com/3d-models/gear",
     "rotation": [
       -1.57079632679,

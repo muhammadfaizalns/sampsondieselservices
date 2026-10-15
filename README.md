@@ -1,6 +1,6 @@
 # Sampson Heavy Diesel Services
 
-Static website for Clive Sampson's truck and heavy diesel services across Victoria, Australia. The site uses the approved Sampson portrait logo, charcoal and high visibility yellow branding, direct phone contact, and real scanned mechanical components.
+Static website for Clive Sampson's truck, heavy equipment and agricultural machinery services across Victoria, Australia. The site uses an equipment focused Sampson logo, charcoal and high visibility yellow branding, a separate illustrated Clive Sampson profile, direct phone contact, and real scanned mechanical components.
 
 Business contact: **0474 372 852**. Website copy uses **Sampson Heavy Diesel Services**, without an apostrophe. Do not introduce hyphens, en dashes or em dashes into visible website copy.
 
@@ -61,12 +61,12 @@ Replace the example with the real approved domain. For later domain changes, fir
 ## Website features
 
 - Direct call and SMS links, a fixed mobile contact bar, visible keyboard focus and responsive navigation.
-- Five detailed service pages: truck servicing, transmission repairs, component rebuilding, mobile field service and fleet maintenance.
+- Seven detailed service pages: truck servicing, heavy equipment servicing, agricultural machinery servicing, truck transmission repairs, component rebuilding, mobile diesel field service, and fleet and equipment maintenance. Existing truck service URLs remain available.
 - Ten scanned mechanical examples: engine block, transmission housing, turbine wheel, piston, crankshaft, water pump, drive gear, steering joint, suspension bracket and compressor.
 - Camera orbit, elevation and distance changes, pause, next angle, automatic component tour and a native phone selector.
 - Lazy model loading, a three model cache, capped rendering resolution, offscreen/background pause and reduced motion support.
 - Victoria lookup using 2,988 locality/postcode pairs from a Vicmap Address snapshot dated 1 October 2026. Queries are filtered locally without sending search text to a lookup service.
-- Eleven pages prepared for indexing, unique metadata, canonical URLs, Organization and Service structured data, breadcrumbs, social preview metadata, sitemap and a 404 page.
+- Thirteen pages prepared for indexing, unique metadata, canonical URLs, Organization and Service structured data, breadcrumbs, social preview metadata, sitemap and a 404 page.
 - Website privacy notice, service information preserving Australian Consumer Law rights and asset credits.
 
 The components are illustrative examples, not photographs of customer work or a promise to service every shown part. The locality snapshot is not exhaustive postal delivery validation.
@@ -75,7 +75,7 @@ The components are illustrative examples, not photographs of customer work or a 
 
 The imported website was checked at CSS viewport widths 320, 390, 640, 768, 1024, 1440, 2560, 3840 and 4096 without horizontal overflow. All ten models loaded. Desktop keyboard selection, the phone component selector, camera pause and next angle controls were checked. Lookup cases covered Dandenong, 3175, Yalla Y Poora and an unmatched query.
 
-The audit covers thirteen HTML files, including both 404 forms, and eleven sitemap entries. It checks one H1 per page, unique indexable titles, valid JSON-LD, local links and fragments, duplicate IDs, required assets and visible text without dash characters.
+The expanded site contains fifteen HTML files, including both 404 forms, and thirteen sitemap entries. The audit checks these generated pages and entries. It checks one H1 per page, unique indexable titles, valid JSON-LD, local links and fragments, duplicate IDs, required assets and visible text without dash characters.
 
 Viewport checks do not establish testing on every physical device. Physical phone performance, full assistive technology testing and production Core Web Vitals remain launch validation work.
 
@@ -98,7 +98,7 @@ Domain setup and Google Business Profile creation follow website approval. Do no
 
 ## Third party assets
 
-Retain the model, font, Three.js and Meshoptimizer licence files and credits under `dist/assets/` and `dist/credits/`. Model sources and adaptations are documented in the website and source records. Vicmap data is attributed to the State of Victoria, Department of Transport and Planning under CC BY 4.0. The supplied business portrait, commissioned logo and truck illustration remain distinct from third party asset licences.
+Retain the model, font, Three.js and Meshoptimizer licence files and credits under `dist/assets/` and `dist/credits/`. Model sources and adaptations are documented in the website and source records. Vicmap data is attributed to the State of Victoria, Department of Transport and Planning under CC BY 4.0. The supplied original photograph, standalone illustrated Clive Sampson profile, commissioned equipment logo and vehicle or machinery illustrations remain distinct from third party asset licences. The business logo does not use Clive’s portrait.
 
 No blanket licence for the business branding or the entire repository is granted by the included third party licence files.
 
