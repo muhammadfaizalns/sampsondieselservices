@@ -128,4 +128,6 @@ The current gallery replaces isolated blocks, housings, gears and brackets with 
 
 The no WebGL engine poster is adapted from the original engine model preview by andreviewport under the same CC BY 4.0 licence. It represents the complete engine, not the former bare engine block.
 
+The gallery loader, viewer and model manifest use versioned import URLs so returning visitors receive the current assembly list. Bump that import chain whenever the viewer or manifest changes.
+
 For this update, all ten assemblies were rendered in the browser and their framing reviewed. The gallery and phone selector were checked at 390, 768 and 2560 CSS pixel widths without horizontal overflow. Browser observations confirmed the 3.5 second tour cadence, a maximum of three cached models and a stable paused camera and selection. The site audit, three deployment builder tests, JavaScript syntax checks and Git whitespace checks pass.

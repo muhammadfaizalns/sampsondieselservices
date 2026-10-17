@@ -39,7 +39,8 @@ class PagesBuildTests(unittest.TestCase):
             self.assertIn('/sampsondieselservices/services/heavy-equipment-servicing/', service_index)
             self.assertIn('/sampsondieselservices/services/agricultural-machinery-servicing/', service_index)
             self.assertIn('`/sampsondieselservices/assets/models/${components[index].file}.glb`', (output / 'gearbox.js').read_text())
-            self.assertIn("'./components.js'", (output / 'gearbox.js').read_text())
+            # Returning visitors must not retain the old component manifest.
+            self.assertRegex((output / 'gearbox.js').read_text(), r"from '\./components\.js\?v=[^']+'")
             self.assertIn('/sampsondieselservices/assets/fonts/', (output / 'assets/fonts/fonts.css').read_text())
             (output / 'stale.html').write_text('stale')
             pages.build(source, output, 'https://review.example/')

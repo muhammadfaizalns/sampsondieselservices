@@ -3,7 +3,7 @@ import { RoomEnvironment } from './assets/vendor/RoomEnvironment.js';
 import { GLTFLoader } from './assets/vendor/GLTFLoader.js';
 import { MeshoptDecoder } from './assets/vendor/meshopt_decoder.mjs';
 
-import { components } from './components.js';
+import { components } from './components.js?v=9';
 
 export async function mountGearbox(panel) {
   const stage = panel.querySelector('.component-stage');
