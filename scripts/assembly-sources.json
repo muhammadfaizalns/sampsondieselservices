@@ -1,0 +1,222 @@
+[
+  {
+    "file": "diesel-engine-assembly",
+    "name": "Diesel engine",
+    "detail": "Complete truck engine with fan, covers, intake, turbo and accessories.",
+    "source": "https://sketchfab.com/3d-models/truck-engine-d7ff313ff1e64c4db803e39b600a0fbf",
+    "creator": "andreviewport",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "originalTitle": "Truck Engine",
+    "sourceCreator": "andreviewport",
+    "retrieved": "2026-10-18",
+    "downloadUrl": "https://huggingface.co/datasets/allenai/objaverse/resolve/main/glbs/000-129/d7ff313ff1e64c4db803e39b600a0fbf.glb",
+    "changes": "Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted. Engine paint and material finish adapted to the Sampson palette; unused texture coordinates removed. Static engine poster cropped and resized from the original model preview.",
+    "outputBytes": 1067324,
+    "outputSha256": "8de07f0de2338d11378c43a8c9808c6f0040efa934bd229247db58299cf4a4a0"
+  },
+  {
+    "file": "transmission-assembly",
+    "name": "Transmission",
+    "detail": "Complete gearbox exterior with bellhousing, input shaft and tail housing.",
+    "source": "https://www.artec3d.com/3d-models/transmission-point",
+    "creator": "Artec 3D / Artec Group inc.",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "kind": "complete assembly or machine",
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "originalTitle": "Transmission",
+    "sourceCreator": "Artec 3D / Artec Group inc.",
+    "retrieved": "2026-10-18",
+    "downloadUrl": "https://cdn.artec3d.com/content-hub-3dmodels/transmission.zip?VersionId=T96XcCvoGdaOwBCD87EThlnE8IbnqGES",
+    "changes": "Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted. Original scan reduced to 220000 triangles, converted to GLB and given a cast metal material.",
+    "outputBytes": 1377316,
+    "outputSha256": "c54d6873f9fbe69f35a8cf4ca1f335a18c175354a2ffd12a5d9258dd9132b27f"
+  },
+  {
+    "file": "turbocharger-assembly",
+    "name": "Turbocharger",
+    "detail": "Complete turbocharger with compressor and turbine housings.",
+    "source": "https://sketchfab.com/3d-models/car-turbocharger-086dde202cd7436cbae2ba77c2a4549b",
+    "creator": "ml design",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "originalTitle": "Car Turbocharger",
+    "sourceCreator": "ml-design",
+    "retrieved": "2026-10-18",
+    "downloadUrl": "https://huggingface.co/datasets/allenai/objaverse/resolve/main/glbs/000-012/086dde202cd7436cbae2ba77c2a4549b.glb",
+    "changes": "Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.",
+    "outputBytes": 1612588,
+    "outputSha256": "2804323fed7e12c40768c0e926251087747cbbb31ba7cb2ecf4c95a417bdc5d4"
+  },
+  {
+    "file": "differential-assembly",
+    "name": "Differential",
+    "detail": "Assembled differential with casing, input and output connections.",
+    "source": "https://sketchfab.com/3d-models/jaguar-differential-by-3d-scan-to-cad-0d212a2b3d2345fbb24bc94470b478b5",
+    "creator": "peel 3D, scan by Pavel from 3D scan to CAD",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "originalTitle": "Jaguar differential by 3D scan to CAD",
+    "sourceCreator": "peel-3d.com",
+    "retrieved": "2026-10-18",
+    "downloadUrl": "https://huggingface.co/datasets/allenai/objaverse/resolve/main/glbs/000-055/0d212a2b3d2345fbb24bc94470b478b5.glb",
+    "changes": "Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.",
+    "outputBytes": 1794440,
+    "outputSha256": "807bf615a18b8f681956be9ca13513fb65f075ae74e1210f800fbf40a49d9fef"
+  },
+  {
+    "file": "truck-axle-assembly",
+    "name": "Truck axle",
+    "detail": "Complete rear axle and dual wheel assembly.",
+    "source": "https://sketchfab.com/3d-models/semi-truck-axle-ada81260bc904bd88cb801a3c306866f",
+    "creator": "GaseousSkate870",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "originalTitle": "Semi Truck Axle",
+    "sourceCreator": "GaseousSkate870",
+    "retrieved": "2026-10-18",
+    "downloadUrl": "https://huggingface.co/datasets/allenai/objaverse/resolve/main/glbs/000-018/ada81260bc904bd88cb801a3c306866f.glb",
+    "changes": "Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.",
+    "outputBytes": 3133472,
+    "outputSha256": "32903ddf7045a41478daeee8fafb1af4b7967ff9e93f0389d2509c3ab082b2b7"
+  },
+  {
+    "file": "steering-axle-assembly",
+    "name": "Steering axle",
+    "detail": "Assembled steering axle, suspension links and wheel connections.",
+    "source": "https://sketchfab.com/3d-models/axle-suspension-obj-6e630892038e46ce9bb66f42b7e44ffa",
+    "creator": "chabacca11",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "originalTitle": "Axle Suspension OBJ",
+    "sourceCreator": "chabacca11",
+    "retrieved": "2026-10-18",
+    "downloadUrl": "https://huggingface.co/datasets/allenai/objaverse/resolve/main/glbs/000-103/6e630892038e46ce9bb66f42b7e44ffa.glb",
+    "changes": "Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.",
+    "outputBytes": 353492,
+    "outputSha256": "1b1bb0a845b27565179bf95a91e6f2ab610506129f5fc555bb08067e59ea2713"
+  },
+  {
+    "file": "alternator-assembly",
+    "name": "Alternator",
+    "detail": "Complete alternator with casing, pulley and internal assembly.",
+    "source": "https://sketchfab.com/3d-models/alternator-aa66f85cff60443ea36c93a8ccd9ef84",
+    "creator": "Brett Dow",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "originalTitle": "Alternator",
+    "sourceCreator": "Brett Dow",
+    "retrieved": "2026-10-18",
+    "downloadUrl": "https://huggingface.co/datasets/allenai/objaverse/resolve/main/glbs/000-047/aa66f85cff60443ea36c93a8ccd9ef84.glb",
+    "changes": "Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.",
+    "outputBytes": 1581060,
+    "outputSha256": "b083fd8fcb95482a9bd90b11d0b080d088ddc56ae46647774d43cca6ca4b1a39"
+  },
+  {
+    "file": "tractor-assembly",
+    "name": "Tractor and trailer",
+    "detail": "Complete tractor and trailer captured from real machinery.",
+    "source": "https://sketchfab.com/3d-models/new-holland-t7-tractor-286ca000c2eb42ccbf2238e1351fbf66",
+    "creator": "Lassi Kaukonen",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "originalTitle": "New Holland T7 tractor",
+    "sourceCreator": "Lassi Kaukonen",
+    "retrieved": "2026-10-18",
+    "downloadUrl": "",
+    "changes": "Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.",
+    "outputBytes": 2019596,
+    "outputSha256": "8be3a57ba6c63b1123bcf638aa7c9ec3cd66889afd87e2ce2d4fee9bcec9f6da"
+  },
+  {
+    "file": "excavator-assembly",
+    "name": "Excavator",
+    "detail": "Complete tracked excavator with cab, digging arm and bucket.",
+    "source": "https://sketchfab.com/3d-models/hyundai-excavator-a805e66f565a412682ac8ce45ab9ac3e",
+    "creator": "Lassi Kaukonen",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "originalTitle": "Hyundai Excavator",
+    "sourceCreator": "Lassi Kaukonen",
+    "retrieved": "2026-10-18",
+    "downloadUrl": "https://huggingface.co/datasets/allenai/objaverse/resolve/main/glbs/000-060/a805e66f565a412682ac8ce45ab9ac3e.glb",
+    "changes": "Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.",
+    "outputBytes": 2042164,
+    "outputSha256": "148f61868c6bf6a42d60ddfddec95b87bb8079750a2f5384a6eae6520fb12d64"
+  },
+  {
+    "file": "bulldozer-assembly",
+    "name": "Bulldozer",
+    "detail": "Complete crawler bulldozer with blade and undercarriage.",
+    "source": "https://sketchfab.com/3d-models/bulldozer-6472b051eb3b44058f0c066b9c997d22",
+    "creator": "Lassi Kaukonen",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "originalTitle": "Bulldozer",
+    "sourceCreator": "Lassi Kaukonen",
+    "retrieved": "2026-10-18",
+    "downloadUrl": "https://huggingface.co/datasets/allenai/objaverse/resolve/main/glbs/000-082/6472b051eb3b44058f0c066b9c997d22.glb",
+    "changes": "Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.",
+    "outputBytes": 2313856,
+    "outputSha256": "486725069f105bdb55d9fb8241e2a04d9ebbbdf61b0127887c8a724a5fb11276"
+  }
+]

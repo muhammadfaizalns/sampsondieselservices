@@ -1,132 +1,152 @@
 export const components = [
   {
-    "file": "engine",
-    "name": "Engine block",
-    "detail": "Cylinder bores and oil galleries.",
-    "source": "https://www.artec3d.com/3d-models/four-cylinder-engine",
+    "file": "diesel-engine-assembly",
+    "name": "Diesel engine",
+    "detail": "Complete truck engine with fan, covers, intake, turbo and accessories.",
+    "source": "https://sketchfab.com/3d-models/truck-engine-d7ff313ff1e64c4db803e39b600a0fbf",
+    "creator": "andreviewport",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
     "rotation": [
-      1.57079632679,
+      0,
       0,
       0
-    ],
-    "metalness": 0.64,
-    "roughness": 0.43
+    ]
   },
   {
-    "file": "transmission",
-    "name": "Transmission housing",
-    "detail": "Cast housing, bearing seats and mounting points.",
-    "source": "https://www.artec3d.com/3d-models/dual-clutch-gearbox",
+    "file": "transmission-assembly",
+    "name": "Transmission",
+    "detail": "Complete gearbox exterior with bellhousing, input shaft and tail housing.",
+    "source": "https://www.artec3d.com/3d-models/transmission-point",
+    "creator": "Artec 3D / Artec Group inc.",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "kind": "complete assembly or machine",
     "rotation": [
-      -1.57079632679,
+      0,
       0,
       0
-    ],
-    "metalness": 0.35,
-    "roughness": 0.61
+    ]
   },
   {
-    "file": "turbine",
-    "name": "Turbine wheel",
-    "detail": "Blade geometry and central hub.",
-    "source": "https://www.artec3d.com/3d-models/turbine",
+    "file": "turbocharger-assembly",
+    "name": "Turbocharger",
+    "detail": "Complete turbocharger with compressor and turbine housings.",
+    "source": "https://sketchfab.com/3d-models/car-turbocharger-086dde202cd7436cbae2ba77c2a4549b",
+    "creator": "ml design",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
     "rotation": [
-      -1.57079632679,
+      0,
       0,
       0
-    ],
-    "metalness": 0.8,
-    "roughness": 0.3
+    ]
   },
   {
-    "file": "engine-piston",
-    "name": "Engine piston",
-    "detail": "Crown, ring grooves and pin bore.",
-    "source": "https://www.artec3d.com/3d-models/engine-piston",
+    "file": "differential-assembly",
+    "name": "Differential",
+    "detail": "Assembled differential with casing, input and output connections.",
+    "source": "https://sketchfab.com/3d-models/jaguar-differential-by-3d-scan-to-cad-0d212a2b3d2345fbb24bc94470b478b5",
+    "creator": "peel 3D, scan by Pavel from 3D scan to CAD",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
     "rotation": [
-      -1.57079632679,
+      0,
       0,
       0
-    ],
-    "metalness": 0.48,
-    "roughness": 0.52
+    ]
   },
   {
-    "file": "crankshaft-hd",
-    "name": "Crankshaft",
-    "detail": "Journals, counterweights and power transfer.",
-    "source": "https://www.artec3d.com/3d-models/crankshaft-hd",
+    "file": "truck-axle-assembly",
+    "name": "Truck axle",
+    "detail": "Complete rear axle and dual wheel assembly.",
+    "source": "https://sketchfab.com/3d-models/semi-truck-axle-ada81260bc904bd88cb801a3c306866f",
+    "creator": "GaseousSkate870",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
     "rotation": [
       0,
       0,
       0
-    ],
-    "metalness": 0.78,
-    "roughness": 0.34
+    ]
   },
   {
-    "file": "automotive-water-pump",
-    "name": "Water pump",
-    "detail": "A closer look at the cooling circuit.",
-    "source": "https://www.artec3d.com/3d-models/automotive-water-pump",
+    "file": "steering-axle-assembly",
+    "name": "Steering axle",
+    "detail": "Assembled steering axle, suspension links and wheel connections.",
+    "source": "https://sketchfab.com/3d-models/axle-suspension-obj-6e630892038e46ce9bb66f42b7e44ffa",
+    "creator": "chabacca11",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
     "rotation": [
-      -1.57079632679,
+      0,
       0,
       0
-    ],
-    "metalness": 0.62,
-    "roughness": 0.4
+    ]
   },
   {
-    "file": "gear",
-    "name": "Drive gear",
-    "detail": "Gear teeth, hub and bore.",
-    "source": "https://www.artec3d.com/3d-models/gear",
+    "file": "alternator-assembly",
+    "name": "Alternator",
+    "detail": "Complete alternator with casing, pulley and internal assembly.",
+    "source": "https://sketchfab.com/3d-models/alternator-aa66f85cff60443ea36c93a8ccd9ef84",
+    "creator": "Brett Dow",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
     "rotation": [
-      -1.57079632679,
+      0,
       0,
       0
-    ],
-    "metalness": 0.76,
-    "roughness": 0.34
+    ]
   },
   {
-    "file": "steering-joint",
-    "name": "Steering joint",
-    "detail": "Movement and connection in close detail.",
-    "source": "https://www.artec3d.com/3d-models/steering-joint",
+    "file": "tractor-assembly",
+    "name": "Tractor and trailer",
+    "detail": "Complete tractor and trailer captured from real machinery.",
+    "source": "https://sketchfab.com/3d-models/new-holland-t7-tractor-286ca000c2eb42ccbf2238e1351fbf66",
+    "creator": "Lassi Kaukonen",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
     "rotation": [
       0,
       0,
       0
-    ],
-    "metalness": 0.7,
-    "roughness": 0.4
+    ]
   },
   {
-    "file": "suspension-bracket",
-    "name": "Suspension bracket",
-    "detail": "Load paths and mounting points.",
-    "source": "https://www.artec3d.com/3d-models/suspension-bracket",
+    "file": "excavator-assembly",
+    "name": "Excavator",
+    "detail": "Complete tracked excavator with cab, digging arm and bucket.",
+    "source": "https://sketchfab.com/3d-models/hyundai-excavator-a805e66f565a412682ac8ce45ab9ac3e",
+    "creator": "Lassi Kaukonen",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
     "rotation": [
-      -1.57079632679,
+      0,
       0,
       0
-    ],
-    "metalness": 0.65,
-    "roughness": 0.43
+    ]
   },
   {
-    "file": "delphi-compressor",
-    "name": "Compressor",
-    "detail": "Housing, fittings and drive connections.",
-    "source": "https://www.artec3d.com/3d-models/delphi-compressor",
+    "file": "bulldozer-assembly",
+    "name": "Bulldozer",
+    "detail": "Complete crawler bulldozer with blade and undercarriage.",
+    "source": "https://sketchfab.com/3d-models/bulldozer-6472b051eb3b44058f0c066b9c997d22",
+    "creator": "Lassi Kaukonen",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "kind": "complete assembly or machine",
     "rotation": [
-      -1.57079632679,
+      0,
       0,
       0
-    ],
-    "metalness": 0.62,
-    "roughness": 0.43
+    ]
   }
 ];

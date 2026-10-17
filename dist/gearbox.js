@@ -8,6 +8,7 @@ import { components } from './components.js';
 export async function mountGearbox(panel) {
   const stage = panel.querySelector('.component-stage');
   const canvas = stage.querySelector('canvas');
+  const poster = stage.querySelector('.component-poster');
   const pauseButton = panel.querySelector('.motion-toggle');
   const angleButton = panel.querySelector('.angle-toggle');
   const tabs = [...panel.querySelectorAll('[data-component]')];
@@ -21,6 +22,8 @@ export async function mountGearbox(panel) {
     panel.classList.add('component-unavailable');
     return;
   }
+  // Keep the selector usable during downloads and recoverable asset failures.
+  panel.classList.add('component-interactive');
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -55,20 +58,53 @@ export async function mountGearbox(panel) {
   ring.rotation.x = -Math.PI / 2; ring.position.y = -2.04; scene.add(ring);
   const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   const cache = new Map();
-  let active = null, current = 0, target = 0, switching = false, request = 0;
+  let active = null, current = 0, target = 0, prefetched = null, request = 0;
   let visible = false, paused = false, frame = 0, last = 0, elapsed = 0, tour = true;
+  let started = false, contextLost = false, tourTimer = 0, slotStartedAt = null;
   let angleStart = null, angleFrom = 0, angleTo = 0, lookHeight = 0, modelRadius = 3.8;
   const duration = 30;
+  const slideDuration = 3500;
+  let slotRemaining = slideDuration;
+  // A slot changes immediately; the existing CSS fade must not extend its dwell.
+  canvas.style.transition = 'none';
+  panel.dataset.slideDuration = String(slideDuration);
+  panel.dataset.currentIndex = '0';
+  panel.dataset.renderedIndex = '-1';
+
+  function disposeModel(root) {
+    const geometries = new Set(), materials = new Set(), textures = new Set();
+    root.traverse(child => {
+      if (!child.isMesh) return;
+      geometries.add(child.geometry);
+      for (const material of [].concat(child.material)) {
+        materials.add(material);
+        for (const value of Object.values(material)) if (value?.isTexture) textures.add(value);
+      }
+    });
+    textures.forEach(texture => texture.dispose());
+    materials.forEach(material => material.dispose());
+    geometries.forEach(geometry => geometry.dispose());
+  }
+  function pruneCache() {
+    // Protect both the requested assembly and its prefetched successor.
+    for (const [index, promise] of cache) {
+      if (cache.size <= 3) break;
+      if (index === current || index === target || index === prefetched) continue;
+      cache.delete(index);
+      promise.then(root => { if (root !== active) disposeModel(root); }).catch(() => {});
+    }
+    panel.dataset.cachedModels = String(cache.size);
+  }
 
   function loadModel(index) {
     if (!cache.has(index)) {
-      cache.set(index, loader.loadAsync(`/assets/models/${components[index].file}.glb`).then(gltf => {
+      const promise = loader.loadAsync(`/assets/models/${components[index].file}.glb`).then(gltf => {
         const root = gltf.scene;
         root.rotation.set(...components[index].rotation);
         root.updateMatrixWorld(true);
         const bounds = new THREE.Box3().setFromObject(root);
         const size = bounds.getSize(new THREE.Vector3());
-        root.scale.multiplyScalar(5.8 / Math.max(size.x, size.y, size.z));
+        root.scale.multiplyScalar(5.8 / (Math.max(size.x, size.y, size.z) || 1));
         root.updateMatrixWorld(true);
         const box = new THREE.Box3().setFromObject(root);
         const center = box.getCenter(new THREE.Vector3());
@@ -80,20 +116,46 @@ export async function mountGearbox(panel) {
         root.traverse(object => {
           if (!object.isMesh) return;
           if (!object.geometry.attributes.normal) object.geometry.computeVertexNormals();
-          const source = object.material;
-          object.material = new THREE.MeshStandardMaterial({
-            color: source.map ? 0xffffff : 0x737d7b,
-            map: source.map || null,
-            metalness: components[index].metalness,
-            roughness: components[index].roughness,
-            side: THREE.DoubleSide
-          });
+          // Retain original PBR colours, texture maps, metalness and roughness.
+          for (const material of [].concat(object.material)) {
+            material.side = THREE.DoubleSide;
+            material.needsUpdate = true;
+          }
           object.castShadow = true; object.receiveShadow = true;
         });
         return root;
-      }).catch(error => { cache.delete(index); throw error; }));
+      }).catch(error => {
+        if (cache.get(index) === promise) cache.delete(index);
+        throw error;
+      });
+      cache.set(index, promise);
+      pruneCache();
     }
     return cache.get(index);
+  }
+  function prefetchNext(index) {
+    prefetched = (index + 1) % components.length;
+    loadModel(prefetched).catch(() => {});
+    pruneCache();
+  }
+  function canMove() {
+    return visible && !paused && !preference.matches && !document.hidden && !contextLost && panel.isConnected;
+  }
+  function stopTourClock() {
+    clearTimeout(tourTimer); tourTimer = 0;
+    if (slotStartedAt !== null) slotRemaining = Math.max(0, slotRemaining - (performance.now() - slotStartedAt));
+    slotStartedAt = null;
+  }
+  function startTourClock() {
+    if (!tour || !started || !canMove() || tourTimer) return;
+    slotStartedAt = performance.now();
+    tourTimer = setTimeout(() => {
+      tourTimer = 0; slotStartedAt = null;
+      if (!tour || !canMove()) { slotRemaining = 0; sync(); return; }
+      // Loading belongs to the new slot. Never leave an old assembly on screen
+      // while waiting for the next download or add a fade after the deadline.
+      select((current + 1) % components.length);
+    }, slotRemaining);
   }
 
   function updateCamera() {
@@ -109,10 +171,11 @@ export async function mountGearbox(panel) {
     const lookY = lookHeight;
     camera.position.set(Math.sin(azimuth) * Math.cos(elevation) * radius, lookY + Math.sin(elevation) * radius, Math.cos(azimuth) * Math.cos(elevation) * radius);
     camera.lookAt(0, lookY, 0);
-    panel.style.setProperty('--camera-progress', String(Math.min(elapsed / duration, 1)));
+    const slotElapsed = slideDuration - slotRemaining + (slotStartedAt === null ? 0 : performance.now() - slotStartedAt);
+    panel.style.setProperty('--camera-progress', String(Math.min(slotElapsed / slideDuration, 1)));
     panel.dataset.cameraAngle = String(Math.round(azimuth * 180 / Math.PI));
   }
-  function render() { updateCamera(); renderer.render(scene, camera); }
+  function render() { if (!contextLost) { updateCamera(); renderer.render(scene, camera); } }
   function resize() {
     const width = stage.clientWidth, height = stage.clientHeight;
     if (!width || !height) return;
@@ -125,58 +188,57 @@ export async function mountGearbox(panel) {
     panel.querySelector('[data-model-name]').textContent = data.name;
     panel.querySelector('[data-model-detail]').textContent = data.detail;
     panel.querySelector('[data-model-number]').textContent = `${String(index + 1).padStart(2, '0')} / ${components.length}`;
-    stage.setAttribute('aria-label', `Real scanned ${data.name.toLowerCase()} in three dimensions with yellow accent lighting`);
+    stage.setAttribute('aria-label', `3D ${data.name.toLowerCase()} assembly with yellow accent lighting`);
     tabs.forEach((tab, i) => tab.setAttribute('aria-pressed', String(i === index)));
     panel.dataset.component = data.file;
+    panel.dataset.currentIndex = String(index);
     picker.value = String(index);
   }
   async function select(index, manual = false) {
+    if (!Number.isInteger(index) || index < 0 || index >= components.length || contextLost) return;
+    stopTourClock(); slotRemaining = slideDuration;
     const token = ++request;
-    target = index; switching = true;
-    if (manual) tour = false;
+    current = index; target = index;
+    if (manual) { tour = false; angleStart = null; }
+    if (active) scene.remove(active);
+    active = null;
+    canvas.style.opacity = '0';
+    panel.classList.remove('component-ready', 'component-unavailable');
+    // The static first-assembly poster cannot stand in for a different system.
+    if (poster) poster.style.visibility = started || index !== 0 ? 'hidden' : '';
+    panel.dataset.renderedIndex = '-1';
+    panel.dataset.loadState = 'loading';
     panel.setAttribute('aria-busy', 'true');
-    panel.querySelector('[data-view-label]').textContent = 'LOADING COMPONENT';
+    setLabels(index);
+    panel.querySelector('[data-view-label]').textContent = 'LOADING ASSEMBLY';
+    const model = loadModel(index);
+    prefetchNext(index);
+    sync();
     try {
-      const object = await loadModel(index);
-      if (token !== request) return;
-      canvas.style.opacity = '0';
-      // The fade conceals the component cut while the camera restarts.
-      if (active && !preference.matches) await new Promise(resolve => setTimeout(resolve, 450));
-      if (token !== request) return;
-      if (active) scene.remove(active);
-      active = object; lookHeight = object.userData.lookHeight; modelRadius = object.userData.radius; scene.add(active); current = index; elapsed = 0;
-      setLabels(index);
+      const object = await model;
+      if (token !== request || contextLost) return;
+      active = object; lookHeight = object.userData.lookHeight; modelRadius = object.userData.radius; scene.add(active);
       renderer.shadowMap.needsUpdate = true;
       render();
+      started = true;
       panel.classList.remove('component-unavailable');
       panel.classList.add('component-ready');
-      canvas.style.opacity = '';
-      panel.querySelector('[data-view-label]').textContent = 'REAL COMPONENTS. UP CLOSE.';
+      canvas.style.opacity = '1';
+      panel.querySelector('[data-view-label]').textContent = 'COMPLETE SYSTEMS. IN DETAIL.';
+      panel.dataset.renderedIndex = String(index);
+      panel.dataset.loadState = 'ready';
       panel.setAttribute('aria-busy', 'false');
-      switching = false; sync();
-      // Keep at most three models cached; the tour loads each next part on demand.
-      for (const [key, promise] of cache) {
-        if (cache.size <= 3) break;
-        if (key === current || key === target) continue;
-        cache.delete(key);
-        promise.then(root => {
-          if (root === active) return;
-          root.traverse(child => {
-            if (!child.isMesh) return;
-            child.geometry.dispose();
-            child.material.map?.dispose();
-            child.material.dispose();
-          });
-        }).catch(() => {});
-      }
+      pruneCache(); sync();
     } catch {
-      if (token !== request) return;
-      switching = false; panel.setAttribute('aria-busy', 'false');
-      panel.querySelector('[data-view-label]').textContent = active ? 'COMPONENT UNAVAILABLE. TRY ANOTHER.' : 'COMPONENT PREVIEW';
-      if (!active) panel.classList.add('component-unavailable');
+      if (token !== request || contextLost) return;
+      panel.setAttribute('aria-busy', 'false');
+      panel.dataset.loadState = 'unavailable';
+      panel.querySelector('[data-view-label]').textContent = 'ASSEMBLY UNAVAILABLE. CHOOSE ANOTHER.';
+      panel.classList.add('component-unavailable');
       sync();
     }
   }
+
   function draw(now) {
     frame = 0;
     const delta = last ? Math.min((now - last) / 1000, .08) : 0;
@@ -186,29 +248,28 @@ export async function mountGearbox(panel) {
       const smooth = t * t * (3 - 2 * t);
       elapsed = angleFrom + (angleTo - angleFrom) * smooth;
       if (t === 1) { elapsed %= duration; angleStart = null; }
-    } else if (!paused && !preference.matches && !switching) {
-      elapsed += delta;
-      if (elapsed >= duration) {
-        elapsed = 0;
-        if (tour) select((current + 1) % components.length);
-      }
+    } else if (canMove()) {
+      elapsed = (elapsed + delta) % duration;
     }
     render();
-    if ((visible && !paused && !preference.matches && !document.hidden) || angleStart !== null) frame = requestAnimationFrame(draw);
+    if ((canMove() && started) || angleStart !== null) frame = requestAnimationFrame(draw);
   }
   function sync() {
+    stopTourClock();
     if (frame) cancelAnimationFrame(frame);
     frame = 0; last = 0;
-    pauseButton.hidden = preference.matches || !active;
+    pauseButton.hidden = preference.matches || !started || contextLost;
     angleButton.hidden = !active;
-    tourButton.hidden = !active || preference.matches;
+    tourButton.hidden = !started || preference.matches || contextLost;
     tourButton.setAttribute('aria-pressed', String(tour));
     tourButton.textContent = tour ? 'Tour on' : 'Auto tour';
     pauseButton.querySelector('[data-motion-label]').textContent = paused ? 'Play' : 'Pause';
     pauseButton.querySelector('.pause-icon').textContent = paused ? '▷' : 'Ⅱ';
-    pauseButton.setAttribute('aria-label', paused ? 'Play camera motion' : 'Pause camera motion');
-    const running = visible && !paused && !preference.matches && !document.hidden && !!active;
+    const motionLabel = tour ? 'automatic tour and camera motion' : 'camera motion';
+    pauseButton.setAttribute('aria-label', `${paused ? 'Play' : 'Pause'} ${motionLabel}`);
+    const running = canMove() && started;
     panel.dataset.motion = running ? 'running' : 'paused';
+    startTourClock();
     if (running || angleStart !== null) frame = requestAnimationFrame(draw); else render();
   }
   pauseButton.addEventListener('click', () => { paused = !paused; angleStart = null; sync(); });
@@ -217,20 +278,26 @@ export async function mountGearbox(panel) {
     if (preference.matches) { elapsed = (elapsed + duration / 4) % duration; sync(); }
     else { angleFrom = elapsed; angleTo = elapsed + duration / 4; angleStart = performance.now(); sync(); }
   });
-  tabs.forEach((tab, index) => tab.addEventListener('click', () => { if (index !== current || target !== current) select(index, true); }));
+  tabs.forEach((tab, index) => tab.addEventListener('click', () => { if (index !== current || !active) select(index, true); }));
   picker.addEventListener('change', () => select(Number(picker.value), true));
-  tourButton.addEventListener('click', () => { tour = !tour; if (tour) paused = false; sync(); });
+  tourButton.addEventListener('click', () => {
+    tour = !tour;
+    if (tour) { stopTourClock(); slotRemaining = slideDuration; paused = false; prefetchNext(current); }
+    sync();
+  });
   preference.addEventListener('change', () => { angleStart = null; sync(); });
-  document.addEventListener('visibilitychange', sync);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) angleStart = null; sync(); });
   new IntersectionObserver(entries => { visible = entries[0].isIntersecting; if (!visible) angleStart = null; sync(); }, { threshold: .05 }).observe(stage);
   new ResizeObserver(resize).observe(stage);
   canvas.addEventListener('webglcontextlost', event => {
-    event.preventDefault(); cancelAnimationFrame(frame); active = null;
+    event.preventDefault(); contextLost = true; ++request; angleStart = null; stopTourClock(); cancelAnimationFrame(frame); active = null;
     panel.classList.remove('component-ready'); panel.classList.add('component-unavailable');
-    setLabels(0);
-    panel.querySelector('[data-view-label]').textContent = 'COMPONENT PREVIEW';
+    panel.dataset.renderedIndex = '-1';
+    panel.dataset.loadState = 'unavailable';
+    panel.querySelector('[data-view-label]').textContent = 'ASSEMBLY PREVIEW';
     panel.setAttribute('aria-busy', 'false');
-    pauseButton.hidden = true; angleButton.hidden = true;
+    pauseButton.hidden = true; angleButton.hidden = true; tourButton.hidden = true;
+    panel.dataset.motion = 'paused';
   });
   resize(); await select(0);
 }

@@ -3,6 +3,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urljoin, urlparse, unquote
 import json
+import hashlib
 import re
 import xml.etree.ElementTree as ET
 
@@ -90,10 +91,23 @@ if set(locations) != set(canonical_urls):
     errors.append('Sitemap and canonical page lists differ')
 components = json.loads((ROOT / 'components.js').read_text().split('=', 1)[1].strip().rstrip(';'))
 if len(components) < 10:
-    errors.append('Fewer than ten components')
+    errors.append('Fewer than ten assembly views')
+sources = json.loads((ROOT.parent / 'scripts/assembly-sources.json').read_text())
+source_records = {record['file']: record for record in sources}
+if set(source_records) != {component['file'] for component in components}:
+    errors.append('Active models and assembly source records differ')
 for component in components:
-    if not (ROOT / 'assets/models' / (component['file'] + '.glb')).is_file():
+    model = ROOT / 'assets/models' / (component['file'] + '.glb')
+    if not model.is_file():
         errors.append('Missing model: ' + component['file'])
+    elif component['file'] in source_records:
+        record = source_records[component['file']]
+        if hashlib.sha256(model.read_bytes()).hexdigest() != record['outputSha256']:
+            errors.append('Assembly hash mismatch: ' + component['file'])
+        if not (ROOT / 'assets/models' / (component['file'] + '-CREDIT.txt')).is_file():
+            errors.append('Missing assembly credit: ' + component['file'])
+        if any(component.get(key) != record.get(key) for key in ('source', 'creator', 'license', 'licenseUrl')):
+            errors.append('Assembly credit and manifest differ: ' + component['file'])
 rows = json.loads((ROOT / 'assets/data/vic-localities-postcodes.json').read_text())
 assert ['Dandenong', '3175'] in rows
 if errors:

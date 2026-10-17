@@ -1,0 +1,6 @@
+New Holland T7 tractor
+By Lassi Kaukonen
+https://sketchfab.com/3d-models/new-holland-t7-tractor-286ca000c2eb42ccbf2238e1351fbf66
+CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.

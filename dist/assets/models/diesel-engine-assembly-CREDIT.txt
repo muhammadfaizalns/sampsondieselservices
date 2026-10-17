@@ -1,0 +1,6 @@
+Truck Engine
+By andreviewport
+https://sketchfab.com/3d-models/truck-engine-d7ff313ff1e64c4db803e39b600a0fbf
+CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted. Engine paint and material finish adapted to the Sampson palette; unused texture coordinates removed. Static engine poster cropped and resized from the original model preview.

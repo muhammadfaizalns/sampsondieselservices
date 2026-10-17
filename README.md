@@ -1,6 +1,6 @@
 # Sampson Heavy Diesel Services
 
-Static website for Clive Sampson's truck, heavy equipment and agricultural machinery services across Victoria, Australia. The site uses an equipment focused Sampson logo, charcoal and high visibility yellow branding, a separate illustrated Clive Sampson profile, direct phone contact, and real scanned mechanical components.
+Static website for Clive Sampson's truck, heavy equipment and agricultural machinery services across Victoria, Australia. The site uses an equipment focused Sampson logo, charcoal and high visibility yellow branding, a separate illustrated Clive Sampson profile, direct phone contact, and complete 3D assemblies and machinery.
 
 Business contact: **0474 372 852**. Website copy uses **Sampson Heavy Diesel Services**, without an apostrophe. Do not introduce hyphens, en dashes or em dashes into visible website copy.
 
@@ -23,14 +23,15 @@ No npm install, framework build or third party API key is required. Node.js is u
 - `dist/`: complete deployable website, including HTML, CSS, JavaScript, fonts, images, model files and licences.
 - `dist/index.html`: homepage and shared header source used by the page generator.
 - `dist/style.css`: responsive layouts, local fonts and reduced motion styles.
-- `dist/components.js`: ten model definitions, captions, source links and material settings.
+- `dist/components.js`: ten complete assembly and machinery definitions, captions, creator and licence records.
 - `dist/gearbox.js`: Three.js viewer, adaptive camera framing, model cache and motion controls.
 - `dist/gearbox-loader.js`: viewport based lazy loading and static fallback handling.
 - `dist/coverage.js`: browser side suburb and postcode lookup.
 - `dist/assets/data/`: Victorian locality snapshot and provenance.
 - `scripts/build-pages.py`: generates service pages, information pages, shared metadata, sitemap and robots file.
 - `scripts/audit-site.py`: checks content constraints, metadata, structured data, local references, sitemap and required models.
-- `scripts/component-sources.json`: provenance for the additional scanned components.
+- `scripts/assembly-sources.json`: active assembly sources, attribution, adaptation notes and output hashes.
+- `scripts/component-sources.json`: provenance for earlier scanned component assets retained in the repository.
 - `.openai/hosting.json`: existing Sites project identifier and static output directory. It contains no authentication token.
 
 ## Edit and validate
@@ -62,18 +63,18 @@ Replace the example with the real approved domain. For later domain changes, fir
 
 - Direct call and SMS links, a fixed mobile contact bar, visible keyboard focus and responsive navigation.
 - Seven detailed service pages: truck servicing, heavy equipment servicing, agricultural machinery servicing, truck transmission repairs, component rebuilding, mobile diesel field service, and fleet and equipment maintenance. Existing truck service URLs remain available.
-- Ten scanned mechanical examples: engine block, transmission housing, turbine wheel, piston, crankshaft, water pump, drive gear, steering joint, suspension bracket and compressor.
-- Camera orbit, elevation and distance changes, pause, next angle, automatic component tour and a native phone selector.
-- Lazy model loading, a three model cache, capped rendering resolution, offscreen/background pause and reduced motion support.
+- Ten complete assembly and machinery examples: truck engine, transmission, turbocharger, differential, truck rear axle, steering axle, alternator, tractor and trailer, excavator and bulldozer.
+- Smooth camera orbit, elevation and distance changes, pause, next angle, an automatic tour with 3.5 second slide slots and a native phone selector. The camera orbit takes 30 seconds independently of slide changes. Pause, reduced motion, offscreen state and hidden tabs stop the automatic tour. Slow loads consume the new slide slot and show loading rather than extending the previous slide.
+- Lazy model loading, a three model cache with next model prefetch, capped rendering resolution, offscreen/background pause and reduced motion support.
 - Victoria lookup using 2,988 locality/postcode pairs from a Vicmap Address snapshot dated 1 October 2026. Queries are filtered locally without sending search text to a lookup service.
 - Thirteen pages prepared for indexing, unique metadata, canonical URLs, Organization and Service structured data, breadcrumbs, social preview metadata, sitemap and a 404 page.
 - Website privacy notice, service information preserving Australian Consumer Law rights and asset credits.
 
-The components are illustrative examples, not photographs of customer work or a promise to service every shown part. The locality snapshot is not exhaustive postal delivery validation.
+The assemblies and machinery are illustrative examples, not photographs of customer work or a promise to service every shown part. The locality snapshot is not exhaustive postal delivery validation.
 
 ## Validation already performed
 
-The imported website was checked at CSS viewport widths 320, 390, 640, 768, 1024, 1440, 2560, 3840 and 4096 without horizontal overflow. All ten models loaded. Desktop keyboard selection, the phone component selector, camera pause and next angle controls were checked. Lookup cases covered Dandenong, 3175, Yalla Y Poora and an unmatched query.
+The original imported website was checked at CSS viewport widths 320, 390, 640, 768, 1024, 1440, 2560, 3840 and 4096 without horizontal overflow. All ten models loaded. Desktop keyboard selection, the phone component selector, camera pause and next angle controls were checked. Lookup cases covered Dandenong, 3175, Yalla Y Poora and an unmatched query.
 
 The expanded site contains fifteen HTML files, including both 404 forms, and thirteen sitemap entries. The audit checks these generated pages and entries. It checks one H1 per page, unique indexable titles, valid JSON-LD, local links and fragments, duplicate IDs, required assets and visible text without dash characters.
 
@@ -120,3 +121,11 @@ python3 scripts/build-github-pages.py --site-url https://muhammadfaizalns.github
 ```
 
 `_site/` is generated and ignored by Git. The builder replaces only an output directory bearing its own marker; it refuses to overwrite unrelated directories. Keep the review workflow and indexing policy separate from the approved public business launch.
+
+## Complete assembly gallery update
+
+The current gallery replaces isolated blocks, housings, gears and brackets with complete assemblies and machinery. Active source records and SHA256 hashes are in `scripts/assembly-sources.json`. Original model attribution and licence links are shown on the credits page, with per model records under `dist/assets/models/`. The transmission retains its bundled CC BY 3.0 licence. The other active models are CC BY 4.0. Assets were optimized and Meshopt compressed for web display. Source material colours are retained, with the truck engine finish adapted to the brand palette.
+
+The no WebGL engine poster is adapted from the original engine model preview by andreviewport under the same CC BY 4.0 licence. It represents the complete engine, not the former bare engine block.
+
+For this update, all ten assemblies were rendered in the browser and their framing reviewed. The gallery and phone selector were checked at 390, 768 and 2560 CSS pixel widths without horizontal overflow. Browser observations confirmed the 3.5 second tour cadence, a maximum of three cached models and a stable paused camera and selection. The site audit, three deployment builder tests, JavaScript syntax checks and Git whitespace checks pass.

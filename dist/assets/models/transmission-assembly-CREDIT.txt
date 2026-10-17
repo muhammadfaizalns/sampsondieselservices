@@ -1,0 +1,6 @@
+Transmission
+By Artec 3D / Artec Group inc.
+https://www.artec3d.com/3d-models/transmission-point
+CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted. Original scan reduced to 220000 triangles, converted to GLB and given a cast metal material.

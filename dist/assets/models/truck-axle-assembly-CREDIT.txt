@@ -1,0 +1,6 @@
+Semi Truck Axle
+By GaseousSkate870
+https://sketchfab.com/3d-models/semi-truck-axle-ada81260bc904bd88cb801a3c306866f
+CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.

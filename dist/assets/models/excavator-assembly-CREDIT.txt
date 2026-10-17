@@ -1,0 +1,6 @@
+Hyundai Excavator
+By Lassi Kaukonen
+https://sketchfab.com/3d-models/hyundai-excavator-a805e66f565a412682ac8ce45ab9ac3e
+CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.

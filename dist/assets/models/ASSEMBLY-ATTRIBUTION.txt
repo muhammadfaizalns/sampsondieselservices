@@ -1,0 +1,71 @@
+Truck Engine
+By andreviewport
+https://sketchfab.com/3d-models/truck-engine-d7ff313ff1e64c4db803e39b600a0fbf
+CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted. Engine paint and material finish adapted to the Sampson palette; unused texture coordinates removed.
+
+Transmission
+By Artec 3D / Artec Group inc.
+https://www.artec3d.com/3d-models/transmission-point
+CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted. Original scan reduced to 220000 triangles, converted to GLB and given a cast metal material.
+
+Car Turbocharger
+By ml-design
+https://sketchfab.com/3d-models/car-turbocharger-086dde202cd7436cbae2ba77c2a4549b
+CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.
+
+Jaguar differential by 3D scan to CAD
+By peel-3d.com
+https://sketchfab.com/3d-models/jaguar-differential-by-3d-scan-to-cad-0d212a2b3d2345fbb24bc94470b478b5
+CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.
+
+Semi Truck Axle
+By GaseousSkate870
+https://sketchfab.com/3d-models/semi-truck-axle-ada81260bc904bd88cb801a3c306866f
+CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.
+
+Axle Suspension OBJ
+By chabacca11
+https://sketchfab.com/3d-models/axle-suspension-obj-6e630892038e46ce9bb66f42b7e44ffa
+CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.
+
+Alternator
+By Brett Dow
+https://sketchfab.com/3d-models/alternator-aa66f85cff60443ea36c93a8ccd9ef84
+CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.
+
+New Holland T7 tractor
+By Lassi Kaukonen
+https://sketchfab.com/3d-models/new-holland-t7-tractor-286ca000c2eb42ccbf2238e1351fbf66
+CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.
+
+Hyundai Excavator
+By Lassi Kaukonen
+https://sketchfab.com/3d-models/hyundai-excavator-a805e66f565a412682ac8ce45ab9ac3e
+CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.
+
+Bulldozer
+By Lassi Kaukonen
+https://sketchfab.com/3d-models/bulldozer-6472b051eb3b44058f0c066b9c997d22
+CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.
+
+The static engine poster is cropped and resized from andreviewport's original Truck Engine model preview under CC BY 4.0. See the engine credit above.

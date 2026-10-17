@@ -91,3 +91,5 @@ h2,h3{text-transform:none}.header-inner{min-height:6.5rem;padding-block:1rem}.br
 @media(max-width:360px){.brand-logo{width:9rem}.header-call{font-size:.8rem;padding-inline:.4rem}.header nav{font-size:.8rem}.hero h1{font-size:3.1rem}.topline .wrap>span:first-child{display:block}.topline .wrap>span:last-child{display:none}}
 
 .service-help .eyebrow{flex:0;color:var(--muted)}
+.component-interactive .component-controls{visibility:visible;display:flex}
+.component-interactive.component-unavailable .component-status{display:flex}

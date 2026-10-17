@@ -1,0 +1,6 @@
+Car Turbocharger
+By ml-design
+https://sketchfab.com/3d-models/car-turbocharger-086dde202cd7436cbae2ba77c2a4549b
+CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+Geometry optimized and Meshopt compressed for web display. Textures resized and compressed where present. Framing, lighting and camera motion adapted.
