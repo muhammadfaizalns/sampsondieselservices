@@ -128,8 +128,8 @@ def rewrite_html(source, previous_origin, origin, not_found=False, measurement_i
             provider_attributes += f' data-clarity-id="{clarity_id}"'
             encoded_paths = html.escape(json.dumps(public_paths or [], separators=(',', ':')), quote=True)
             provider_attributes += f' data-public-paths="{encoded_paths}"'
-        additions += ('<link rel="stylesheet" href="/analytics.css?v=2">'
-                      f'<script src="/analytics.js?v=2" defer{provider_attributes} '
+        additions += ('<link rel="stylesheet" href="/analytics.css?v=3">'
+                      f'<script src="/analytics.js?v=3" defer{provider_attributes} '
                       f'data-host="{host}"></script>')
     if '</head>' not in rendered:
         raise ValueError('Production HTML is missing its closing head element.')

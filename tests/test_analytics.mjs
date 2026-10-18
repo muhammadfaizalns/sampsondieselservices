@@ -144,9 +144,15 @@ function setup({ hostname = 'sampsonheavydiesel.com', id = measurementId, clarit
   const commands = () => (window.dataLayer || []).map(args => Array.from(args));
   const clarityCommands = () => (window.clarity?.q || []).map(args => Array.from(args));
   const events = name => commands().filter(command => command[0] === 'event' && (!name || command[1] === name));
-  function click(label) { assert.ok(button(label), `Missing ${label}`); button(label).dispatch('click'); }
+  const visible = node => !!node && !node.hidden && (!node.parent || visible(node.parent));
+  function click(label) {
+    assert.ok(visible(button(label)), `Missing or hidden ${label}`);
+    assert.notEqual(button(label).disabled, true, `Disabled ${label}`);
+    button(label).dispatch('click');
+  }
   function load(provider = 'ga4') { assert.equal(scripts(provider).length, 1); scripts(provider)[0].onload(); }
   function choose(ga4, replay) {
+    if (!visible(button('Save choices'))) click(visible(document.getElementById('analytics-preferences-panel')) ? 'Settings' : 'Analytics preferences');
     if (document.getElementById('analytics-ga4-choice')) document.getElementById('analytics-ga4-choice').checked = ga4;
     if (document.getElementById('analytics-clarity-choice')) document.getElementById('analytics-clarity-choice').checked = replay;
     click('Save choices');
@@ -165,7 +171,7 @@ function setup({ hostname = 'sampsonheavydiesel.com', id = measurementId, clarit
     return clickEvent;
   }
   return { window, document, store, button, scripts, commands, clarityCommands, events, click, load, choose, contact,
-    panel: () => document.getElementById('analytics-preferences-panel'), cookies,
+    panel: () => document.getElementById('analytics-preferences-panel'), cookies, visible,
     reloads: () => reloads, coverage, lookup, results, select, maskSnapshots,
     storageFailures, cookieFailures, replacements,
     storageChange(value) {
@@ -182,14 +188,97 @@ function setup({ hostname = 'sampsonheavydiesel.com', id = measurementId, clarit
 const accepted = { ga4: 'accepted', clarity: 'accepted' };
 const declined = { ga4: 'declined', clarity: 'declined' };
 
-test('new visitors and decline all never load either provider; contact stays available', () => {
+test('compact notice hides detailed controls without moving focus or loading providers', () => {
+  const page = setup({ clarity: clarityId });
+  const fields = page.document.getElementById('analytics-tool-options');
+  const status = page.panel().children.find(node => node.className === 'analytics-status');
+  assert.equal(page.document.getElementById('analytics-preferences-title').textContent, 'Cookies and privacy');
+  assert.equal(fields.hidden, true);
+  assert.equal(status.hidden, true);
+  assert.equal(page.visible(page.button('Save choices')), false);
+  assert.equal(page.visible(page.button('Close preferences')), false);
+  assert.equal(page.visible(page.button('Accept all')), true);
+  assert.equal(page.visible(page.button('Reject optional')), true);
+  assert.equal(page.visible(page.button('Settings')), true);
+  assert.equal(page.document.activeElement, undefined);
+  assert.equal(page.scripts().length, 0);
+  assert.equal(page.store.has(storageKey), false);
+});
+
+test('settings and back or Escape never grant consent and discard unsaved changes', () => {
+  const page = setup({ clarity: clarityId });
+  page.click('Settings');
+  assert.equal(page.document.activeElement.textContent, 'Your privacy choices');
+  assert.equal(page.button('Settings').getAttribute('aria-expanded'), 'true');
+  const ga4 = page.document.getElementById('analytics-ga4-choice');
+  const clarity = page.document.getElementById('analytics-clarity-choice');
+  assert.equal(page.visible(ga4), true);
+  assert.equal(ga4.checked, false);
+  assert.equal(clarity.checked, false);
+  ga4.checked = clarity.checked = true;
+  page.click('Back');
+  assert.equal(page.document.activeElement, page.button('Settings'));
+  assert.equal(page.visible(ga4), false);
+  page.click('Settings');
+  assert.equal(ga4.checked, false);
+  assert.equal(clarity.checked, false);
+  page.panel().dispatch('keydown', { key: 'Escape' });
+  assert.equal(page.visible(page.button('Settings')), true);
+  assert.equal(page.store.has(storageKey), false);
+  assert.equal(page.scripts().length, 0);
+});
+
+test('footer opens saved preferences directly and cancelling leaves permissions unchanged', () => {
+  const page = setup({ clarity: clarityId, initialChoice: declined });
+  const original = page.store.get(storageKey);
+  page.click('Analytics preferences');
+  assert.equal(page.document.activeElement.textContent, 'Your privacy choices');
+  assert.equal(page.visible(page.button('Save choices')), true);
+  assert.equal(page.visible(page.button('Back')), false);
+  page.document.getElementById('analytics-clarity-choice').checked = true;
+  page.click('Close preferences');
+  assert.equal(page.document.activeElement, page.button('Analytics preferences'));
+  assert.equal(page.store.get(storageKey), original);
+  page.click('Analytics preferences');
+  assert.equal(page.document.getElementById('analytics-clarity-choice').checked, false);
+  page.panel().dispatch('keydown', { key: 'Escape' });
+  assert.equal(page.panel().hidden, true);
+  page.choose(true, false);
+  assert.equal(page.document.activeElement, page.button('Analytics preferences'));
+  assert.equal(page.scripts('ga4').length, 1);
+  assert.equal(page.scripts('clarity').length, 0);
+});
+
+test('compact notice discloses only configured providers and keeps Microsoft own use clear', () => {
+  const google = setup();
+  const replay = setup({ id: '', clarity: clarityId });
+  const description = page => page.panel().children.find(node => node.className === 'analytics-description').textContent;
+  assert.match(description(google), /Google Analytics/);
+  assert.doesNotMatch(description(google), /Microsoft|Clarity/);
+  assert.match(description(replay), /Microsoft Clarity replays masked activity/);
+  assert.match(description(replay), /own products and advertising/);
+  assert.doesNotMatch(description(replay), /Google/);
+});
+
+test('forced off preferences expose storage warning and disable grant controls', () => {
+  const page = setup({ clarity: clarityId, initialChoice: accepted, hash: '#optional-analytics-off' });
+  page.click('Analytics preferences');
+  const status = page.panel().children.find(node => node.className === 'analytics-status');
+  assert.equal(status.hidden, false);
+  assert.match(status.textContent, /could not save your choice/);
+  assert.equal(page.button('Accept all').disabled, true);
+  assert.equal(page.button('Save choices').disabled, true);
+  assert.equal(page.scripts().length, 0);
+});
+
+test('new visitors and rejection never load either provider; contact stays available', () => {
   const page = setup({ clarity: clarityId });
   assert.equal(page.panel().hidden, false);
   assert.equal(page.scripts().length, 0);
   assert.equal(page.commands().length, 0);
   assert.equal(page.clarityCommands().length, 0);
   assert.equal(page.contact('tel:+61474372852').defaultPrevented, false);
-  page.click('Decline all');
+  page.click('Reject optional');
   assert.equal(page.panel().hidden, true);
   assert.equal(page.scripts().length, 0);
   assert.equal(JSON.parse(page.store.get(storageKey)).ga4, 'declined');
@@ -359,7 +448,7 @@ test('GA withdrawal stops events and clears its accessible cookies without requi
   page.load();
   const count = page.commands().length;
   page.click('Analytics preferences');
-  page.click('Decline all');
+  page.click('Reject optional');
   page.contact('tel:+61474372852');
   assert.equal(page.commands().length, count);
   assert.equal(page.window[`ga-disable-${measurementId}`], true);
@@ -396,7 +485,8 @@ test('replay withdrawal persists refusal, stops and reloads even while loading; 
 test('vendor stop exception never blocks saved refusal and a clean reload', () => {
   const page = setup({ clarity: clarityId, initialChoice: accepted });
   page.window.clarity = () => { throw new Error('Vendor failure'); };
-  page.click('Decline all');
+  page.click('Analytics preferences');
+  page.click('Reject optional');
   assert.equal(page.reloads(), 1);
   assert.equal(JSON.parse(page.store.get(storageKey)).clarity, 'declined');
 });
@@ -405,7 +495,8 @@ test('withdrawing GA during loading clears pending contact events', () => {
   const page = setup();
   page.click('Accept all');
   page.contact('tel:+61474372852');
-  page.click('Decline all');
+  page.click('Analytics preferences');
+  page.click('Reject optional');
   page.load();
   assert.equal(page.events().length, 0);
   assert.equal(page.commands().some(command => command[0] === 'config'), false);
@@ -433,7 +524,8 @@ test('blocked local storage leaves current page choices usable and withdrawal st
   page.load();
   page.contact('tel:+61474372852');
   assert.equal(page.events('phone_click').length, 1);
-  page.click('Decline all');
+  page.click('Analytics preferences');
+  page.click('Reject optional');
   assert.equal(page.reloads(), 1);
   assert.equal(page.contact('tel:+61474372852').defaultPrevented, false);
 });
@@ -519,7 +611,8 @@ test('when persistence and cookie refusal both fail a fixed safe address prevent
   page.storageFailures.set = true;
   page.storageFailures.remove = true;
   page.cookieFailures.set = true;
-  page.click('Decline all');
+  page.click('Analytics preferences');
+  page.click('Reject optional');
   assert.equal(page.reloads(), 1);
   assert.equal(page.window.location.hash, '#optional-analytics-off');
   assert.equal(page.replacements.length, 1);
@@ -535,7 +628,8 @@ test('cookie getter or setter failures cannot block decline, Clarity stop or cle
   for (const operation of ['get', 'set']) {
     const page = setup({ clarity: clarityId, initialChoice: accepted });
     page.cookieFailures[operation] = true;
-    page.click('Decline all');
+    page.click('Analytics preferences');
+    page.click('Reject optional');
     assert.equal(page.window[`ga-disable-${measurementId}`], true);
     assert.equal(page.reloads(), 1);
     assert.equal(page.clarityCommands().at(-1)[0], 'stop');

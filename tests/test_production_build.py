@@ -186,10 +186,10 @@ class ProductionBuildTests(unittest.TestCase):
             self.assertEqual(result['ga4'], 'configured with consent required')
             for path in output.rglob('*.html'):
                 content = path.read_text()
-                self.assertEqual(content.count('src="/analytics.js?v=2"'), 1)
+                self.assertEqual(content.count('src="/analytics.js?v=3"'), 1)
                 self.assertIn('data-ga4-id="G-ABCDEF1234"', content)
                 self.assertIn('data-host="sampsonheavydiesel.com"', content)
-                self.assertIn('href="/analytics.css?v=2"', content)
+                self.assertIn('href="/analytics.css?v=3"', content)
                 self.assertNotIn('gtag(', content)
             self.assertIn(GOOGLE_NOTICE, (output / 'privacy/index.html').read_text())
             (source / 'analytics.js').unlink()
@@ -209,8 +209,8 @@ class ProductionBuildTests(unittest.TestCase):
                     self.assertEqual(result['clarity'] != 'disabled', bool(clarity))
                     for path in output.rglob('*.html'):
                         content = path.read_text()
-                        self.assertEqual(content.count('src="/analytics.js?v=2"'), int(bool(ga4 or clarity)))
-                        self.assertEqual(content.count('href="/analytics.css?v=2"'), int(bool(ga4 or clarity)))
+                        self.assertEqual(content.count('src="/analytics.js?v=3"'), int(bool(ga4 or clarity)))
+                        self.assertEqual(content.count('href="/analytics.css?v=3"'), int(bool(ga4 or clarity)))
                         self.assertEqual('data-ga4-id=' in content, bool(ga4))
                         self.assertEqual('data-clarity-id=' in content, bool(clarity))
                         self.assertEqual('data-public-paths=' in content, bool(clarity))

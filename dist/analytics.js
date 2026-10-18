@@ -25,6 +25,7 @@
   var pageViewed = false;
   var pendingEvents = [];
   var restoreFocus = false;
+  var settingsOpen = false;
   var disableKey = measurementId && 'ga-disable-' + measurementId;
   if (disableKey) window[disableKey] = true;
 
@@ -164,12 +165,18 @@
   panel.hidden = true;
   panel.setAttribute('role', 'region');
   panel.setAttribute('aria-labelledby', 'analytics-preferences-title');
-  var title = element('h2', 'analytics-title', 'Your privacy choices');
+  var title = element('h2', 'analytics-title', 'Cookies and privacy');
   title.id = 'analytics-preferences-title';
   title.tabIndex = -1;
-  var description = element('p', 'analytics-description',
-    'Choose optional tools separately. Both stay off until you allow them. Calling and texting always work.');
+  var summary = 'With your permission, ' + (measurementId ? 'Google Analytics measures visits' : '') +
+    (measurementId && clarityId ? ' and ' : '') +
+    (clarityId ? 'Microsoft Clarity replays masked activity on this website' : '') + '. ' +
+    (measurementId && clarityId ? 'These providers receive usage data. ' : 'This provider receives usage data. ') +
+    (clarityId ? 'Microsoft may also use collected data for its own products and advertising. ' : '') +
+    'You can use this website either way.';
+  var description = element('p', 'analytics-description', summary);
   var fields = element('div', 'analytics-options');
+  fields.id = 'analytics-tool-options';
   function option(id, label, explanation) {
     var row = element('label', 'analytics-option');
     var input = element('input');
@@ -184,20 +191,28 @@
   var gaInput = measurementId && option('analytics-ga4-choice', 'Google Analytics',
     'Counts visits and use of call and text links.');
   var clarityInput = clarityId && option('analytics-clarity-choice', 'Microsoft Clarity session replay',
-    'Records masked session replays, clicks and heatmaps to show how this website is used.');
-  var privacy = element('a', 'analytics-privacy', 'Read our privacy information');
+    'Records masked activity, clicks and heatmaps. Microsoft may also use collected data for its own products and advertising.');
+  var privacy = element('a', 'analytics-privacy', 'Privacy information');
   privacy.href = '/privacy/';
   var status = element('p', 'analytics-status');
   status.setAttribute('aria-live', 'polite');
   var actions = element('div', 'analytics-actions');
   var accept = element('button', 'analytics-choice', 'Accept all');
-  var decline = element('button', 'analytics-choice', 'Decline all');
+  var decline = element('button', 'analytics-choice', 'Reject optional');
   var save = element('button', 'analytics-choice analytics-save', 'Save choices');
   accept.type = decline.type = save.type = 'button';
   actions.append(accept, decline, save);
+  var links = element('div', 'analytics-links');
+  var settings = element('button', 'analytics-settings', 'Settings');
+  settings.type = 'button';
+  settings.setAttribute('aria-controls', fields.id);
+  settings.setAttribute('aria-expanded', 'false');
+  var back = element('button', 'analytics-settings', 'Back');
+  back.type = 'button';
+  links.append(settings, back, privacy);
   var close = element('button', 'analytics-close', 'Close preferences');
   close.type = 'button';
-  panel.append(title, description, fields, privacy, status, actions, close);
+  panel.append(title, description, fields, status, actions, links, close);
   document.body.append(panel);
 
   var preferences = element('button', 'analytics-preferences', 'Analytics preferences');
@@ -211,6 +226,18 @@
     return (measurementId && choices.ga4 === null) || (clarityId && choices.clarity === null);
   }
 
+  function updateView() {
+    title.textContent = settingsOpen ? 'Your privacy choices' : 'Cookies and privacy';
+    description.textContent = settingsOpen ?
+      'Choose optional tools separately. Calling and texting always work. Change your choices anytime through Analytics preferences in the footer.' : summary;
+    fields.hidden = save.hidden = !settingsOpen;
+    status.hidden = !settingsOpen && !persistenceWarning;
+    settings.hidden = settingsOpen;
+    settings.setAttribute('aria-expanded', settingsOpen ? 'true' : 'false');
+    back.hidden = !settingsOpen || !needsChoice();
+    close.hidden = !settingsOpen || !!needsChoice();
+  }
+
   function updateStatus() {
     if (gaInput) gaInput.checked = choices.ga4 === 'accepted';
     if (clarityInput) clarityInput.checked = choices.clarity === 'accepted';
@@ -221,7 +248,7 @@
     if (persistenceWarning) text.push(persistenceWarning);
     status.textContent = text.join(' ');
     accept.disabled = save.disabled = forcedOff;
-    close.hidden = !!needsChoice();
+    updateView();
   }
 
   function hidePanel() {
@@ -408,15 +435,29 @@
     hidePanel();
   });
   close.addEventListener('click', hidePanel);
+  settings.addEventListener('click', function () {
+    settingsOpen = true;
+    updateStatus();
+    title.focus();
+  });
+  function showSummary() {
+    settingsOpen = false;
+    updateStatus();
+    settings.focus();
+  }
+  back.addEventListener('click', showSummary);
   preferences.addEventListener('click', function () {
     restoreFocus = true;
+    settingsOpen = true;
     updateStatus();
     panel.hidden = false;
     preferences.setAttribute('aria-expanded', 'true');
     title.focus();
   });
   panel.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape' && !needsChoice()) hidePanel();
+    if (event.key !== 'Escape') return;
+    if (!needsChoice()) hidePanel();
+    else if (settingsOpen) showSummary();
   });
 
   function placement(link) {
@@ -459,7 +500,11 @@
     }
     applyChoices(readChoice(), false);
     if (!needsChoice()) hidePanel();
-    else panel.hidden = false;
+    else {
+      settingsOpen = false;
+      updateView();
+      panel.hidden = false;
+    }
   });
   function checkReplayNavigation() {
     if (clarityState !== 'idle' && !safeReplayUrl()) stopClarityAndReload();
