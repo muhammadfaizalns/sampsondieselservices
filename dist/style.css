@@ -94,3 +94,5 @@ h2,h3{text-transform:none}.header-inner{min-height:6.5rem;padding-block:1rem}.br
 .component-interactive .component-controls{visibility:visible;display:flex}
 .component-interactive.component-unavailable .component-status{display:flex}
 .about-text{max-width:65rem}.about-text .about-copy{max-width:72ch;margin-inline:auto}
+
+.service-card-heading{font-size:2rem}

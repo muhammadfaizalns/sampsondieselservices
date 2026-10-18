@@ -1,0 +1,17 @@
+{
+  "name": "sampson-heavy-diesel-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production deployment tooling for Sampson Heavy Diesel Services",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "python3 scripts/prepare-launch.py",
+    "deploy": "wrangler deploy",
+    "test:analytics": "node --test tests/test_analytics.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "4.151.1"
+  }
+}

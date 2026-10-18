@@ -17,3 +17,7 @@ node_modules/
 
 # Generated GitHub Pages review artifact
 _site/
+
+# Generated Cloudflare production artifact and local tooling state
+_production/
+.wrangler/

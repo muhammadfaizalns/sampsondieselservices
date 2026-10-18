@@ -90,14 +90,14 @@ This repository imports website source snapshot `31ff70dfb40372a237c6713989b94d7
 
 A GitHub push does not change the audience or publish a Sites deployment. The separate GitHub Pages review workflow publishes website changes from `main` to the public review URL described below. Preserve the existing Sites project identifier when using the Sites publishing workflow.
 
-Public launch is pending website approval and confirmed owner details:
+The website is approved for hosting at **https://sampsonheavydiesel.com**, registered through Cloudflare. Production deployment configuration is prepared; account connection, DNS, certificate and live analytics/search verification remain launch steps. Confirm remaining operator details without inventing them:
 
 - Legal operator, business registration and ABN.
 - Operating postcode **3815** was confirmed by the user on 18 October 2026. Exact locality, customer workshop access, actual hours and travel arrangements still need confirmation. Postcode 3815 covers Bunyip, Bunyip North, Iona and Tonimbuk; this does not establish four branches or a public street address.
 - Labour hire licence or applicable exclusion and the actual labour arrangement. Labour hire advertising is currently withheld. PR status or a trade qualification does not establish labour hire licensing.
 - Contact email, enquiry and job record handling, scope, pricing, call out and approval practices.
 
-Domain setup and Google Business Profile creation follow website approval. Do not invent locations, reviews, hours, licences, service guarantees or manufacturer affiliations. Search ranking cannot be guaranteed, and the suburb lookup does not itself create indexable locality landing pages. The website is not a certification of every business legal obligation.
+Use the purchased domain for production. Google Business Profile setup still needs accurate owner details. Do not invent locations, reviews, hours, licences, service guarantees or manufacturer affiliations. Search ranking cannot be guaranteed, and the suburb lookup does not itself create indexable locality landing pages. The website is not a certification of every business legal obligation.
 
 ## Third party assets
 
@@ -185,3 +185,29 @@ The generator maintains service titles, descriptions, headings and visible link 
 Narrower engine, hydraulic, electrical, manufacturer or machine specialties require Clive's confirmation before promotion. Gallery models do not establish those capabilities. Broader keyword coverage requires genuine service facts and repair evidence rather than invented experience, repeated suburb lists or a keyword density target. Review search query and page performance after the approved production launch, then compare qualified enquiries and bookings over time.
 
 Guidance checked: [Google SEO Starter Guide](https://developers.google.com/search/docs/fundamentals/seo-starter-guide) and [Google spam policies](https://developers.google.com/search/docs/essentials/spam-policies). Google recommends clear useful content and descriptive links; it does not use the meta keywords tag.
+
+
+## Cloudflare production hosting
+
+Follow [the production launch guide](docs/PRODUCTION-LAUNCH.md) for account ownership, deployment, DNS, HTTPS, analytics, search services, live checks and rollback. This guide targets Workers Static Assets, with no application server, database, customer login or runtime secret.
+
+`wrangler.jsonc` serves only `_production/` on `sampsonheavydiesel.com`. The separate GitHub Pages workflow continues to publish its nonindexed review build. Public Workers development and version URLs are disabled. The www hostname requires the documented proxied DNS record and zone redirect rule.
+
+Install pinned deployment tooling with `npm ci`, then prepare the production artifact:
+
+```sh
+python3 scripts/prepare-launch.py
+npx wrangler deploy --dry-run
+```
+
+The first command generates and audits source, runs Python and analytics regressions, checks JavaScript and builds `_production/` with production canonicals, schema, social metadata, robots and sitemap. It does not publish anything. The second command validates Cloudflare configuration without deploying. Actual deployment uses `npx wrangler deploy` only after the correct Cloudflare account and zone are connected. GitHub and Cloudflare build settings are in the launch guide.
+
+The production builder refuses to overwrite an unrelated directory. It excludes removed portraits, older logos, unused model binaries, dotfiles, symlinks and source configuration, while retaining active assets and third party licences. Source artwork remains in the repository. Production has thirteen indexable content pages; error pages remain noindex and unknown paths use an actual 404 response.
+
+Production `_headers` sets a Content Security Policy, anti framing, content type protection, referrer and feature policies. The gallery requires embedded WebAssembly plus blob texture fetching; no general inline script or JavaScript eval allowance is used. HTML and application scripts revalidate; mutable assets use a modest one day browser cache. Initial HSTS is one day on the production hostname, without subdomain enforcement or preload. Increase it only after live HTTPS checks. Dashboard HSTS should remain off while the repository supplies this policy.
+
+Enable Cloudflare Web Analytics once through automatic setup for the production hostname. The repository does not inject a duplicate beacon. The policy permits its script and reporting endpoints. Privacy disclosure is applied only to the production build; the review notice continues to describe review technology.
+
+GA4 stays disabled until `GA4_MEASUREMENT_ID` is supplied as a Cloudflare build variable. The public ID must match the current `G-` plus ten uppercase letter/digit format. Never put a Cloudflare API token, password or Google service account key into these files. With a valid ID, the builder adds the consent module and matching Google disclosure. Google code does not load before acceptance. Visitors can decline or withdraw; call and SMS links remain independent. The module sends one sanitized page view and manual `phone_click` / `sms_click` intent events. It uses published canonical paths and origin only referrers, excluding visitor query text, arbitrary error paths, link contents and lookup values. Turn GA4 Enhanced measurement off to avoid extra automatic events outside that allowlist, and keep Google Signals and ad personalisation off. Campaign query attribution is intentionally limited by this minimisation policy.
+
+Python tests cover production isolation, indexing, output pruning, configuration rejection and provider injection. Analytics tests cover consent persistence and expiry, withdrawal and pending load races, cross tab changes, blocked storage, single page views, preview suppression, sanitized events and contact behavior. Browser checks of the Workers emulator confirm textured models under CSP, postcode lookup and correct 200/404 responses. Actual provider delivery, certificates, host redirects and search access need verification on the live purchased domain.
