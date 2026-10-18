@@ -30,6 +30,8 @@ No npm install, framework build or third party API key is required. Node.js is u
 - `dist/assets/data/`: Victorian locality snapshot and provenance.
 - `scripts/build-pages.py`: generates service pages, information pages, shared metadata, sitemap and robots file.
 - `scripts/audit-site.py`: checks content constraints, metadata, structured data, local references, sitemap and required models.
+- `scripts/audit-search-readiness.py`: checks offline canonical, metadata, identity, sitemap and indexing policy consistency for review or production artifacts. It does not measure indexing or rankings.
+- `scripts/site_urls.py`: validates the canonical root origin and keeps repeated domain migrations consistent.
 - `scripts/assembly-sources.json`: active assembly sources, attribution, adaptation notes and output hashes.
 - `scripts/component-sources.json`: provenance for earlier scanned component assets retained in the repository.
 - `.openai/hosting.json`: existing Sites project identifier and static output directory. It contains no authentication token.
@@ -57,7 +59,7 @@ SITE_ORIGIN=https://your-approved-domain.example python3 scripts/build-pages.py
 python3 scripts/audit-site.py
 ```
 
-Replace the example with the real approved domain. For later domain changes, first update the homepage canonical and Open Graph origin as well; the current generator only replaces the original Sites origin automatically. Domain registration, DNS changes, redirects, site access changes and business profile creation are separate launch actions.
+Replace the example with the real approved domain. The generator reads the current homepage canonical, updates it and other first party metadata to the requested origin, and keeps that origin on subsequent runs without an override. Repeated migrations are covered by regression tests. Source generation requires an HTTPS domain root; use the separate review builder for a project subfolder. Domain registration, DNS changes, redirects, site access changes and business profile creation are separate launch actions.
 
 ## Website features
 
@@ -91,7 +93,7 @@ A GitHub push does not change the audience or publish a Sites deployment. The se
 Public launch is pending website approval and confirmed owner details:
 
 - Legal operator, business registration and ABN.
-- Operating base, customer workshop access, actual hours and travel arrangements.
+- Operating postcode **3815** was confirmed by the user on 18 October 2026. Exact locality, customer workshop access, actual hours and travel arrangements still need confirmation. Postcode 3815 covers Bunyip, Bunyip North, Iona and Tonimbuk; this does not establish four branches or a public street address.
 - Labour hire licence or applicable exclusion and the actual labour arrangement. Labour hire advertising is currently withheld. PR status or a trade qualification does not establish labour hire licensing.
 - Contact email, enquiry and job record handling, scope, pricing, call out and approval practices.
 
@@ -109,7 +111,7 @@ Review URL: <https://muhammadfaizalns.github.io/sampsondieselservices/>
 
 In repository Settings, open Pages and select **GitHub Actions** as the source. The `Deploy review to GitHub Pages` workflow deploys relevant changes pushed to `main`. To republish manually, open Actions, select that workflow and choose **Run workflow** on `main`.
 
-The workflow audits the source, runs deployment regression tests, builds `_site/`, then uploads and deploys that directory. It reads the actual site URL from GitHub Pages configuration. `dist/` and the existing Sites deployment remain unchanged.
+The workflow audits the source, runs regression tests, builds `_site/`, checks review search directives and identity consistency, then uploads and deploys that directory. It reads the actual site URL from GitHub Pages configuration. `dist/` and the existing Sites deployment remain unchanged.
 
 The review builder adapts internal page links, CSS fonts, application data and model requests, canonical URLs, social metadata, structured data and the sitemap for the project subfolder. Every HTML page gets `noindex, nofollow, noarchive`. This discourages search indexing but does not provide access control: the GitHub Pages review website is public.
 
@@ -118,6 +120,7 @@ To build and test the review artifact locally:
 ```sh
 python3 -m unittest discover -s tests -v
 python3 scripts/build-github-pages.py --site-url https://muhammadfaizalns.github.io/sampsondieselservices/
+python3 scripts/audit-search-readiness.py --directory _site --site-url https://muhammadfaizalns.github.io/sampsondieselservices/ --mode review
 ```
 
 `_site/` is generated and ignored by Git. The builder replaces only an output directory bearing its own marker; it refuses to overwrite unrelated directories. Keep the review workflow and indexing policy separate from the approved public business launch.
@@ -131,3 +134,28 @@ The no WebGL engine poster is adapted from the original engine model preview by 
 The gallery loader, viewer and model manifest use versioned import URLs so returning visitors receive the current assembly list. Bump that import chain whenever the viewer or manifest changes.
 
 For this update, all ten assemblies were rendered in the browser and their framing reviewed. The gallery and phone selector were checked at 390, 768 and 2560 CSS pixel widths without horizontal overflow. Browser observations confirmed the 3.5 second tour cadence, a maximum of three cached models and a stable paused camera and selection. The site audit, three deployment builder tests, JavaScript syntax checks and Git whitespace checks pass.
+
+## Search launch and measurement
+
+The review URL is intentionally noindex. Better structure, valid metadata or attractive 3D models do not prove better Google rankings, AI citations or more calls. Current checks validate artifacts, not search engine decisions. No first position guarantee is made for any suburb, postcode or AI answer.
+
+After an approved business domain and owner details are ready, generate its source and run the production artifact check:
+
+```sh
+SITE_ORIGIN=https://approved-domain.example python3 scripts/build-pages.py
+python3 scripts/audit-search-readiness.py --directory dist --site-url https://approved-domain.example --mode production
+```
+
+That command does not launch a website. Deploy production separately from the noindex review workflow. Verify real HTTP status, canonical and indexing headers, root robots.txt, sitemap and crawler access on the actual production host. A robots.txt file under a GitHub project subfolder does not control the hostname root. Keep 404 pages noindex and outside the sitemap.
+
+Confirm business identity, exact base locality, workshop visitor policy, hours, supported equipment and travel terms before adding more operational claims. Keep real address private if no customers visit; configure a genuine service area Business Profile under Google's current rules. Do not create fake branches or change the business name to include search keywords.
+
+Set up owner controlled Google Search Console, Google Business Profile and Bing Webmaster Tools after approval. Submit the canonical sitemap, inspect key pages, and check the current Google Search generative AI inclusion setting. Request honest reviews from real customers without incentives or selective filtering. Develop a small number of useful service or regional pages backed by actual work; the postcode lookup is not thousands of indexed pages.
+
+Collect original job evidence with customer permission: machine type, actual locality, concern, diagnosis, work completed, tested outcome and photos. Clive must review technical statements. Licensed 3D examples and commissioned illustrations are not customer job evidence. Do not invent completed work, credentials, endorsements, ratings or response times.
+
+Measure indexed pages, nonbrand queries and clicks, Google AI impressions, Bing AI citations and actual qualified calls and bookings. Keep query, location, date, device and exact AI prompt fixed when sampling results. Citation order or one successful prompt is not a universal ranking. A phone link tap is not a completed call. No analytics pixels or call tracking have been added.
+
+Mobile performance still needs real device and field measurement. The gallery is lazy and its cache is bounded, but watching the full tour can download about 17.3 MB of models. Test rural mobile conditions and prioritize access to the phone number and service text. Header image variants and an optional low data viewer are performance work to consider after measurement.
+
+Official guidance checked on 18 October 2026: [Google AI optimization](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide), [local ranking](https://support.google.com/business/answer/7091?hl=en), [service areas](https://support.google.com/business/answer/9157481?hl=en), [Google Search AI control](https://support.google.com/webmasters/answer/16908024), [Google AI measurement](https://support.google.com/webmasters/answer/16984139), [OpenAI crawlers](https://developers.openai.com/api/docs/bots), [Claude crawlers](https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler), [Perplexity crawlers](https://docs.perplexity.ai/docs/resources/perplexity-crawlers), and [Australia Post 3815](https://auspost.com.au/postcode/3815). Google states it does not use llms.txt for Search visibility; no special AI schema or fabricated crawler instructions have been added.

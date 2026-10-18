@@ -36,7 +36,9 @@ jobs:
       - name: Build review artifact
         env:
           PAGES_URL: ${{ steps.pages.outputs.base_url }}
-        run: python3 scripts/build-github-pages.py --site-url "$PAGES_URL"
+        run: |
+          python3 scripts/build-github-pages.py --site-url "$PAGES_URL"
+          python3 scripts/audit-search-readiness.py --directory _site --site-url "$PAGES_URL" --mode review
       - name: Upload website artifact
         uses: actions/upload-pages-artifact@v4
         with:
