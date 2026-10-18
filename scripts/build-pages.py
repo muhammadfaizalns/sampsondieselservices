@@ -13,6 +13,7 @@ header=re.search(r'  <div class="topline">.*?</header>',source,re.S).group(0).re
 footer='''<footer><div class="wrap"><div class="footer-inner"><a class="brand" href="/" aria-label="Sampson Heavy Diesel Services home"><img class="brand-logo" src="/assets/sampson-equipment-logo.webp" width="1991" height="703" loading="lazy" alt="Sampson Heavy Diesel Services logo with bulldozer, truck, tractor and digger"></a><p>© 2026 Sampson Heavy Diesel Services</p><a href="tel:+61474372852">0474 372 852</a></div><nav class="footer-links" aria-label="Footer"><a href="/services/">Services</a><a href="/service-areas/">Victoria service areas</a><a href="/service-information/">Service information</a><a href="/privacy/">Privacy and access</a><a href="/credits/">Images and credits</a></nav><p class="footer-note">Based in Victoria 3815. Victoria wide enquiries. Travel, timing and job suitability confirmed directly with Clive.</p></div></footer><div class="mobile-contact"><a href="tel:+61474372852">Call Clive · 0474 372 852</a><a href="sms:+61474372852" aria-label="Send Clive a text message">Text</a></div>'''
 org={'@type':'Organization','@id':ORIGIN+'/#business','name':NAME,'description':'Heavy diesel servicing, transmission repairs, component rebuilding and field service for trucks, heavy equipment and agricultural machinery across Victoria.','location':{'@type':'Place','name':'Victoria 3815, Australia','address':{'@type':'PostalAddress','postalCode':'3815','addressRegion':'VIC','addressCountry':'AU'}},'url':ORIGIN+'/','logo':ORIGIN+'/assets/sampson-equipment-logo.png','telephone':'+61474372852','areaServed':{'@type':'AdministrativeArea','name':'Victoria, Australia'},'contactPoint':{'@type':'ContactPoint','name':'Clive Sampson','telephone':'+61474372852','contactType':'service enquiries','availableLanguage':'English'}}
 services = [{'slug': 'truck-servicing',
+  'link_label': 'Truck servicing details',
   'name': 'Truck servicing',
   'title': 'Truck Servicing Victoria | Sampson Heavy Diesel',
   'heading': 'Truck servicing in Victoria',
@@ -46,11 +47,12 @@ services = [{'slug': 'truck-servicing',
                 'href="/service-areas/">Find your suburb or postcode</a>, then call Clive to discuss '
                 'availability.</p>')]},
  {'slug': 'heavy-equipment-servicing',
+  'link_label': 'Equipment servicing details',
   'name': 'Heavy equipment servicing',
   'title': 'Heavy Equipment Servicing Victoria | Sampson Heavy Diesel',
   'heading': 'Heavy equipment servicing in Victoria',
-  'intro': 'Servicing and maintenance for working machinery across Victoria. Discuss your equipment, '
-           'operating hours and work requirements directly with Clive Sampson.',
+  'intro': 'Speak with heavy equipment mechanic Clive Sampson about servicing and maintenance across Victoria. Discuss your machinery, '
+           'operating hours and work requirements directly.',
   'description': 'Heavy equipment servicing and maintenance enquiries across Victoria. Discuss your machine, '
                  'service history and location with Clive Sampson on 0474 372 852.',
   'sections': [('Plan maintenance around your equipment',
@@ -80,13 +82,14 @@ services = [{'slug': 'truck-servicing',
                 'the job.</p><p>Confirm the scope, location, timing and applicable charges before work is '
                 'arranged.</p>')]},
  {'slug': 'agricultural-machinery-servicing',
+  'link_label': 'Farm machinery servicing details',
   'name': 'Agricultural machinery servicing',
-  'title': 'Agricultural Machinery Servicing Victoria | Sampson',
-  'heading': 'Agricultural machinery servicing in Victoria',
-  'intro': 'Servicing and heavy diesel support for agricultural machinery across Victoria. Discuss your '
+  'title': 'Farm Machinery Servicing Victoria | Sampson Heavy Diesel',
+  'heading': 'Farm and agricultural machinery servicing in Victoria',
+  'intro': 'Farm machinery servicing and heavy diesel support for agricultural businesses across Victoria. Discuss your '
            'machine, service history and operating schedule directly with Clive Sampson.',
-  'description': 'Agricultural and farm machinery servicing enquiries across Victoria. Discuss machine '
-                 'details, operating hours and location with Clive Sampson on 0474 372 852.',
+  'description': 'Farm and agricultural machinery servicing across Victoria. Discuss machine details, '
+                 'service history and location with Clive Sampson. Call 0474 372 852.',
   'sections': [('Maintenance for your operating schedule',
                 '<p>Farm machinery maintenance needs to account for operating hours, service records and the '
                 'work ahead. Tell Clive which machine needs attention, how it is used and when it can be '
@@ -115,13 +118,14 @@ services = [{'slug': 'truck-servicing',
                 'maintenance</a>. For a location enquiry, use the <a href="/service-areas/">Victorian suburb '
                 'and postcode lookup</a> or call with your nearest town.</p>')]},
  {'slug': 'truck-transmission-repairs',
+  'link_label': 'Gearbox and transmission details',
   'name': 'Truck transmission repairs',
-  'title': 'Truck Transmission Repairs Victoria | Sampson',
-  'heading': 'Truck transmission repairs in Victoria',
-  'intro': 'Hard to shift, slipping out of gear or hearing something new? Talk to Clive about truck '
-           'transmission repairs and the next step for your vehicle.',
-  'description': 'Truck transmission repair enquiries across Victoria. Hard shifting, gear noise or loss of '
-                 'drive? Discuss symptoms with Clive Sampson on 0474 372 852.',
+  'title': 'Truck Gearbox & Transmission Repairs Victoria | Sampson',
+  'heading': 'Truck gearbox and transmission repairs in Victoria',
+  'intro': 'Hard to shift, slipping out of gear or hearing something new? Talk to Clive about your truck '
+           'gearbox or transmission and the next step for assessment.',
+  'description': 'Truck gearbox and transmission repair enquiries across Victoria. Hard shifting, gear noise '
+                 'or loss of drive? Call Clive Sampson on 0474 372 852.',
   'sections': [('Describe the transmission concern',
                 '<p>The useful detail is what happens, not a guessed diagnosis. Tell Clive which gear or '
                 'driving condition brings the problem on, whether it changes when the truck warms up, and '
@@ -145,9 +149,10 @@ services = [{'slug': 'truck-servicing',
                 '<p>Have your suburb, postcode or nearest town ready. Clive will confirm travel, timing and '
                 'availability for your truck.</p>')]},
  {'slug': 'component-rebuilding',
+  'link_label': 'Component rebuilding details',
   'name': 'Component rebuilding',
   'title': 'Diesel Component Rebuilding Victoria | Sampson',
-  'heading': 'Component rebuilding in Victoria',
+  'heading': 'Diesel component rebuilding in Victoria',
   'intro': 'Assessment, repair and rebuilding enquiries for components from trucks, heavy equipment and '
            'agricultural machinery. Discuss the assembly, its condition and the work required with Clive '
            'Sampson.',
@@ -177,15 +182,21 @@ services = [{'slug': 'truck-servicing',
                 'See the dedicated <a href="/services/truck-transmission-repairs/">truck transmission '
                 'page</a> for truck shifting and drive concerns.</p>')]},
  {'slug': 'mobile-truck-mechanic',
+  'link_label': 'Mobile diesel service details',
   'name': 'Mobile diesel mechanic and field service',
   'title': 'Mobile Diesel Mechanic Victoria | Sampson Heavy Diesel',
-  'heading': 'Field service for trucks and machinery',
-  'intro': 'Mobile heavy diesel support for trucks, heavy equipment and agricultural machinery across '
-           'Victoria. Call Clive with your location, equipment details and symptoms to discuss the next '
+  'heading': 'Mobile diesel mechanic and field service in Victoria',
+  'intro': 'Need a mobile truck mechanic or field service for heavy equipment or farm machinery in '
+           'Victoria? Call Clive Sampson with your location, equipment details and symptoms to discuss the next '
            'step.',
-  'description': 'Mobile diesel field service for trucks, heavy equipment and farm machinery in Victoria, '
-                 'Australia. Arranging help from interstate? Call 0474 372 852.',
-  'sections': [('Provide the location and access details',
+  'description': 'Mobile diesel mechanic and field service for trucks, heavy equipment and farm machinery '
+                 'in Victoria. Local and interstate enquiries: 0474 372 852.',
+  'sections': [('Truck and machinery breakdown enquiries',
+                '<p>If a truck or machine has stopped working, call with its location and what happened. '
+                'Explain any access restrictions and who can meet Clive at the vehicle or machine. '
+                'He will discuss the symptoms, availability and whether mobile service is suitable '
+                'before arrangements are agreed.</p>'),
+               ('Provide the location and access details',
                 '<p>Give the site address, road, nearest town, suburb or postcode. A map pin can help '
                 'explain a remote location. Tell Clive whether the vehicle or machine is beside a road, in a '
                 'yard, on a farm or at a worksite, and describe any access restrictions.</p><p>For an '
@@ -219,6 +230,7 @@ services = [{'slug': 'truck-servicing',
                 'href="/services/agricultural-machinery-servicing/">agricultural machinery '
                 'servicing</a>.</p>')]},
  {'slug': 'fleet-maintenance',
+  'link_label': 'Fleet maintenance details',
   'name': 'Fleet and equipment maintenance',
   'title': 'Fleet and Equipment Maintenance Victoria | Sampson',
   'heading': 'Fleet and equipment maintenance in Victoria',
@@ -226,10 +238,12 @@ services = [{'slug': 'truck-servicing',
            'and operational requirements. Discuss the work and priorities directly with Clive Sampson.',
   'description': 'Fleet and equipment maintenance in Victoria, Australia. Enquiries welcome from local and '
                  'interstate operators. Discuss trucks and machinery with Clive.',
-  'sections': [('Set maintenance priorities',
-                '<p>Start with the vehicles and machines needing attention, the service work due and any '
-                'known faults. Makes, models, kilometres, engine hours and available service records help '
-                'frame the maintenance discussion.</p><p>Share preferred dates and operational limits. Clive '
+  'sections': [('Scheduled fleet and equipment maintenance',
+                '<p>Preventive maintenance planning starts with the service schedule, operating conditions '
+                'and records for each truck or machine. Share the work already due, developing faults '
+                'and the next suitable maintenance window. Makes, models, kilometres and engine hours '
+                'help frame the discussion.</p><p>For a mixed fleet, identify which equipment can be '
+                'released first and which vehicles are needed for upcoming work. Clive '
                 'will confirm the proposed scope, availability and scheduling arrangements for your fleet or '
                 'equipment.</p>'),
                ('Information for maintenance planning',
@@ -295,7 +309,7 @@ for s in services:
  body=hero(s['name'],s['heading'],s['intro'],parent_services=True)+'<section class="section"><div class="wrap page-grid"><div class="prose">'+''.join('<h2>'+h+'</h2>'+p for h,p in s['sections'])+'<h2>Related services</h2><div class="related-links">'+''.join(f'<a href="/services/{r["slug"]}/">{r["name"]}</a>' for r in services if r!=s)+'</div></div>'+side+'</div></section>'
  page(path,s['title'],s['description'],body,[schema_service(s),breadcrumbs(path,s['name'])])
 
-body=hero('Services','Heavy diesel services for trucks and machinery','Servicing, transmission repairs, component rebuilding and field service for trucks, heavy equipment and agricultural machinery across Victoria. Discuss your equipment and work requirements directly with Clive Sampson.')+'<section class="section"><div class="wrap"><div class="service-grid">'+''.join(f'<article class="service-card"><h2 style="font-size:2rem">{s["name"]}</h2><p>{s["intro"]}</p><a class="service-link" href="/services/{s["slug"]}/">View service details<span class="sr-only"> for {s["name"].lower()}</span></a></article>' for s in services)+'</div></div></section>'
+body=hero('Services','Heavy diesel services for trucks and machinery','Servicing, transmission repairs, component rebuilding and field service for trucks, heavy equipment and agricultural machinery across Victoria. Discuss your equipment and work requirements directly with Clive Sampson.')+'<section class="section"><div class="wrap"><div class="service-grid">'+''.join(f'<article class="service-card"><h2 style="font-size:2rem">{s["name"]}</h2><p>{s["intro"]}</p><a class="service-link" href="/services/{s["slug"]}/">{s["link_label"]}</a></article>' for s in services)+'</div></div></section>'
 page('/services/','Heavy Diesel Services Victoria | Sampson','Truck, heavy equipment and agricultural machinery servicing across Victoria. Transmissions, component rebuilding and field service. Call Clive Sampson.',body,[schema_service(s) for s in services]+[breadcrumbs('/services/','Services')])
 
 coverage=hero('Victoria service areas','Heavy diesel services from Victoria 3815','Based in the 3815 postcode area, taking truck, heavy equipment and agricultural machinery enquiries across Victoria. Find your locality, then call Clive to discuss the work, travel and availability.',False)+'''<section class="section"><div class="wrap"><div class="coverage-search"><form id="coverage-form" hidden><label for="location-search">Suburb, town or Victorian postcode</label><div class="search-row"><input id="location-search" name="location" type="search" autocomplete="address-level2" maxlength="80" placeholder="Try Dandenong or 3175" aria-describedby="location-hint" required><button class="button button-yellow" type="submit">Find location</button></div><p id="location-hint" class="search-hint">Location lookup only. Attendance and timing must be confirmed with Clive.</p></form><div id="coverage-results" class="coverage-results" role="status" aria-live="polite"></div><noscript><p>Call Clive on <a href="tel:+61474372852">0474 372 852</a> with your location. Interactive lookup needs JavaScript.</p></noscript></div><div class="prose"><h2>Arranging help from outside Victoria</h2><p>If your truck, fleet or machine is in Victoria and you are elsewhere, call with the equipment location, make, model and work required. Nominate a contact person on site and discuss who can approve work and receive updates. Clive will confirm suitability, availability and travel before a booking is agreed.</p><p>Calling from outside Australia? Use <a href="tel:+61474372852">+61 474 372 852</a>. Work enquiries relate to equipment located in Victoria.</p><h2>Based in 3815, with enquiries across Victoria</h2><p>The 3815 postcode area includes Bunyip, Bunyip North, Iona and Tonimbuk. Sampson Heavy Diesel Services is based in this postcode area. Call Clive to agree the work location and service arrangements before visiting or booking.</p><p>Sampson Heavy Diesel Services takes servicing and repair enquiries for trucks, heavy equipment and agricultural machinery across Victoria. Your location, access, the work required and Clive’s availability determine the arrangements. Call Clive to confirm arrangements before a booking.</p><p>If your location is not shown in the lookup, call with your nearest town, road name or map pin. Some localities share a postcode, and a postcode alone may not identify where the vehicle or machine is.</p><a class="button button-yellow" href="tel:+61474372852">Discuss your location · 0474 372 852</a></div><div class="region-list"><article><h3>Melbourne and surrounding suburbs</h3><p>For a vehicle or machine in a depot, yard, workshop or worksite, provide the suburb, access details and work required. Call to discuss planned servicing or field service arrangements.</p></article><article><h3>Geelong and western Victoria</h3><p>For Geelong, Ballarat and towns further west, provide the location and details of the truck, heavy equipment or agricultural machinery. Discuss the required work and preferred timing before arranging travel.</p></article><article><h3>Central and northern Victoria</h3><p>For Bendigo, Shepparton, Wodonga and surrounding towns, provide the road, farm or site address. Tell Clive about equipment access, operating hours and the symptoms before arranging attendance.</p></article><article><h3>Gippsland and eastern Victoria</h3><p>For farms, towns and worksites across Gippsland, the nearest town and a map pin can help explain your location. Call with your vehicle or machinery details to discuss suitability, travel and availability.</p></article><article><h3>Mallee and north western Victoria</h3><p>For Mildura, Swan Hill and remote locations, provide the nearest town, road and vehicle or machinery details. Discuss the work, access and travel arrangements directly before a booking is confirmed.</p></article></div><div class="prose"><h2>Choose the work you need</h2><div class="related-links">'''+''.join(f'<a href="/services/{s["slug"]}/">{s["name"]}</a>' for s in services)+'''</div></div><p class="source-note">Locality and postcode data derived from <a href="https://discover.data.vic.gov.au/en_AU/dataset/vicmap-address-rest-api" target="_blank" rel="noopener">Vicmap Address</a>. © State of Victoria, Department of Transport and Planning. <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. Adapted for this lookup. Snapshot 1 October 2026. Property address data, not postal delivery validation. Some locations may be absent.</p></div></section>'''
