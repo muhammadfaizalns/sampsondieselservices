@@ -8,7 +8,8 @@
   },
   "scripts": {
     "build": "python3 scripts/prepare-launch.py",
-    "deploy": "wrangler deploy",
+    "deploy": "wrangler pages deploy _production --project-name sampson-heavy-diesel",
+    "check:cloudflare": "python3 scripts/smoke-cloudflare.py",
     "test:analytics": "node --test tests/test_analytics.mjs"
   },
   "devDependencies": {

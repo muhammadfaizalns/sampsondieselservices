@@ -16,7 +16,7 @@ Open <http://127.0.0.1:4173/>. An HTTP server is required for JavaScript modules
 
 Serve `dist/` at the domain root. The GitHub Pages workflow builds a separate `_site/` directory with the required project subfolder paths. Keep the committed `dist/` directory: the generator reads the homepage as a template.
 
-No npm install, framework build or third party API key is required. Node.js is used only for optional JavaScript syntax checks.
+No npm install, framework build or third party API key is required to preview committed source. Production validation additionally requires Node.js 22 or later; `npm ci` installs the pinned Cloudflare deployment tooling.
 
 ## Project layout
 
@@ -90,7 +90,7 @@ This repository imports website source snapshot `31ff70dfb40372a237c6713989b94d7
 
 A GitHub push does not change the audience or publish a Sites deployment. The separate GitHub Pages review workflow publishes website changes from `main` to the public review URL described below. Preserve the existing Sites project identifier when using the Sites publishing workflow.
 
-The website is approved for hosting at **https://sampsonheavydiesel.com**, registered through Cloudflare. Production deployment configuration is prepared; account connection, DNS, certificate and live analytics/search verification remain launch steps. Confirm remaining operator details without inventing them:
+The website is approved for hosting at **https://sampsonheavydiesel.com**, registered through Cloudflare. Cloudflare Pages project **sampson-heavy-diesel** is connected to this repository, and its initial deployment has been submitted. Custom domain association, certificate and live analytics/search verification are still pending. Confirm remaining operator details without inventing them:
 
 - Legal operator, business registration and ABN.
 - Operating postcode **3815** was confirmed by the user on 18 October 2026. Exact locality, customer workshop access, actual hours and travel arrangements still need confirmation. Postcode 3815 covers Bunyip, Bunyip North, Iona and Tonimbuk; this does not establish four branches or a public street address.
@@ -139,11 +139,11 @@ For this update, all ten assemblies were rendered in the browser and their frami
 
 The review URL is intentionally noindex. Better structure, valid metadata or attractive 3D models do not prove better Google rankings, AI citations or more calls. Current checks validate artifacts, not search engine decisions. No first position guarantee is made for any suburb, postcode or AI answer.
 
-After an approved business domain and owner details are ready, generate its source and run the production artifact check:
+The approved business domain now has a dedicated production builder. Prepare its isolated artifact and check search readiness:
 
 ```sh
-SITE_ORIGIN=https://approved-domain.example python3 scripts/build-pages.py
-python3 scripts/audit-search-readiness.py --directory dist --site-url https://approved-domain.example --mode production
+python3 scripts/prepare-launch.py
+python3 scripts/audit-search-readiness.py --directory _production --site-url https://sampsonheavydiesel.com --mode production
 ```
 
 That command does not launch a website. Deploy production separately from the noindex review workflow. Verify real HTTP status, canonical and indexing headers, root robots.txt, sitemap and crawler access on the actual production host. A robots.txt file under a GitHub project subfolder does not control the hostname root. Keep 404 pages noindex and outside the sitemap.
@@ -154,7 +154,7 @@ Set up owner controlled Google Search Console, Google Business Profile and Bing 
 
 Collect original job evidence with customer permission: machine type, actual locality, concern, diagnosis, work completed, tested outcome and photos. Clive must review technical statements. Licensed 3D examples and commissioned illustrations are not customer job evidence. Do not invent completed work, credentials, endorsements, ratings or response times.
 
-Measure indexed pages, nonbrand queries and clicks, Google AI impressions, Bing AI citations and actual qualified calls and bookings. Keep query, location, date, device and exact AI prompt fixed when sampling results. Citation order or one successful prompt is not a universal ranking. A phone link tap is not a completed call. No analytics pixels or call tracking have been added.
+Measure indexed pages, nonbrand queries and clicks, Google AI impressions, Bing AI citations and actual qualified calls and bookings. Keep query, location, date, device and exact AI prompt fixed when sampling results. Citation order or one successful prompt is not a universal ranking. A phone link tap is not a completed call. GA4 consent controls are prepared for production but remain disabled without the owner's Measurement ID. No call tracking service has been added.
 
 Mobile performance still needs real device and field measurement. The gallery is lazy and its cache is bounded, but watching the full tour can download about 17.3 MB of models. Test rural mobile conditions and prioritize access to the phone number and service text. Header image variants and an optional low data viewer are performance work to consider after measurement.
 
@@ -189,18 +189,20 @@ Guidance checked: [Google SEO Starter Guide](https://developers.google.com/searc
 
 ## Cloudflare production hosting
 
-Follow [the production launch guide](docs/PRODUCTION-LAUNCH.md) for account ownership, deployment, DNS, HTTPS, analytics, search services, live checks and rollback. This guide targets Workers Static Assets, with no application server, database, customer login or runtime secret.
+Follow [the production launch guide](docs/PRODUCTION-LAUNCH.md) for account ownership, Pages deployment, DNS, HTTPS, analytics, search services, live checks and rollback. Hosting uses Cloudflare Pages Git integration, with no application server, database, customer login or runtime secret.
 
-`wrangler.jsonc` serves only `_production/` on `sampsonheavydiesel.com`. The separate GitHub Pages workflow continues to publish its nonindexed review build. Public Workers development and version URLs are disabled. The www hostname requires the documented proxied DNS record and zone redirect rule.
+`wrangler.jsonc` defines Pages project `sampson-heavy-diesel` and build output `_production/`. The production branch is `main`; the dashboard build command is `python3 scripts/prepare-launch.py`, with `NODE_VERSION=22` and `PYTHON_VERSION=3.13`. Later pushes to `main` trigger Pages production builds. Attach `sampsonheavydiesel.com` through the project's Custom domains screen before creating or accepting its DNS record. Configuration alone does not associate a custom hostname.
+
+The separate GitHub Pages workflow continues to publish its nonindexed review build. Production and preview Pages hostnames receive `noindex` headers; these are indexing controls, not privacy controls. Redirect the production Pages hostname to the apex after custom domain activation. Disable unnecessary preview branches or protect previews with Cloudflare Access. The www hostname requires the documented proxied DNS record and zone redirect rule.
 
 Install pinned deployment tooling with `npm ci`, then prepare the production artifact:
 
 ```sh
 python3 scripts/prepare-launch.py
-npx wrangler deploy --dry-run
+npx wrangler pages dev _production --ip 127.0.0.1 --port 8788
 ```
 
-The first command generates and audits source, runs Python and analytics regressions, checks JavaScript and builds `_production/` with production canonicals, schema, social metadata, robots and sitemap. It does not publish anything. The second command validates Cloudflare configuration without deploying. Actual deployment uses `npx wrangler deploy` only after the correct Cloudflare account and zone are connected. GitHub and Cloudflare build settings are in the launch guide.
+The first command generates and audits source, runs Python and analytics regressions, checks JavaScript and builds `_production/` with production canonicals, schema, social metadata, robots and sitemap. It does not publish anything. The second starts a local Pages emulator for HTTP checks. Stop it after checking successful pages, an unknown 404 path and security headers. Production updates normally deploy through the connected Git integration. Manual CLI deployment uses `npx wrangler pages deploy _production --project-name sampson-heavy-diesel --branch main` only after verifying the correct Cloudflare account. GitHub and Cloudflare build settings are in the launch guide.
 
 The production builder refuses to overwrite an unrelated directory. It excludes removed portraits, older logos, unused model binaries, dotfiles, symlinks and source configuration, while retaining active assets and third party licences. Source artwork remains in the repository. Production has thirteen indexable content pages; error pages remain noindex and unknown paths use an actual 404 response.
 
@@ -210,4 +212,4 @@ Enable Cloudflare Web Analytics once through automatic setup for the production 
 
 GA4 stays disabled until `GA4_MEASUREMENT_ID` is supplied as a Cloudflare build variable. The public ID must match the current `G-` plus ten uppercase letter/digit format. Never put a Cloudflare API token, password or Google service account key into these files. With a valid ID, the builder adds the consent module and matching Google disclosure. Google code does not load before acceptance. Visitors can decline or withdraw; call and SMS links remain independent. The module sends one sanitized page view and manual `phone_click` / `sms_click` intent events. It uses published canonical paths and origin only referrers, excluding visitor query text, arbitrary error paths, link contents and lookup values. Turn GA4 Enhanced measurement off to avoid extra automatic events outside that allowlist, and keep Google Signals and ad personalisation off. Campaign query attribution is intentionally limited by this minimisation policy.
 
-Python tests cover production isolation, indexing, output pruning, configuration rejection and provider injection. Analytics tests cover consent persistence and expiry, withdrawal and pending load races, cross tab changes, blocked storage, single page views, preview suppression, sanitized events and contact behavior. Browser checks of the Workers emulator confirm textured models under CSP, postcode lookup and correct 200/404 responses. Actual provider delivery, certificates, host redirects and search access need verification on the live purchased domain.
+Python tests cover production isolation, indexing, output pruning, configuration rejection and provider injection. Analytics tests cover consent persistence and expiry, withdrawal and pending load races, cross tab changes, blocked storage, single page views, preview suppression, sanitized events and contact behavior. The production artifact has previously been checked in Cloudflare's local emulator for textured models under CSP, postcode lookup and correct 200/404 responses. Pages HTTP smoke checks and the live release must verify the final hosting configuration. Actual provider delivery, certificates, host redirects and search access still need verification on the purchased domain.

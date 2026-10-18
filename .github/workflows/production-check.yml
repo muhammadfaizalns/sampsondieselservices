@@ -34,13 +34,13 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '24'
+          node-version: '22'
           cache: npm
       - name: Install pinned deployment tooling
         run: npm ci
       - name: Validate production build without account credentials
         run: python3 scripts/prepare-launch.py
-      - name: Validate Cloudflare configuration without deploying
+      - name: Check Pages routing and security headers locally without deploying
         env:
           WRANGLER_SEND_METRICS: 'false'
-        run: npx wrangler deploy --dry-run
+        run: npm run check:cloudflare
