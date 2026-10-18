@@ -16,13 +16,15 @@ def production_environment(environment=None, configuration_path=PRODUCTION_CONFI
     branch = result.get('CF_PAGES_BRANCH')
     if branch is not None and branch != 'main':
         result['GA4_MEASUREMENT_ID'] = ''
+        result['CLARITY_PROJECT_ID'] = ''
         return result
-    if 'GA4_MEASUREMENT_ID' not in result:
+    missing = [key for key in ('GA4_MEASUREMENT_ID', 'CLARITY_PROJECT_ID') if key not in result]
+    if missing:
         configuration = json.loads(configuration_path.read_text())
-        if (not isinstance(configuration, dict)
-                or not isinstance(configuration.get('GA4_MEASUREMENT_ID'), str)):
-            raise ValueError('Public production config must contain a string GA4_MEASUREMENT_ID.')
-        result['GA4_MEASUREMENT_ID'] = configuration['GA4_MEASUREMENT_ID']
+        for key in missing:
+            if not isinstance(configuration, dict) or not isinstance(configuration.get(key), str):
+                raise ValueError(f'Public production config must contain a string {key}.')
+            result[key] = configuration[key]
     return result
 
 

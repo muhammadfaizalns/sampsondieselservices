@@ -1,5 +1,6 @@
 """Regression checks for isolated production builds, public assets and launch policy."""
 import hashlib
+import html
 import importlib.util
 import json
 from pathlib import Path
@@ -15,8 +16,10 @@ production = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(production)
 OLD = 'https://source.example'
 NEW = 'https://sampsonheavydiesel.com'
-PRIVACY = '<h1>Privacy</h1><p>Cloudflare Web Analytics information.</p>{{GOOGLE_ANALYTICS_NOTICE}}'
+PRIVACY = ('<h1>Privacy</h1><p>Cloudflare Web Analytics information.</p>'
+           '{{GOOGLE_ANALYTICS_NOTICE}}{{CLARITY_NOTICE}}')
 GOOGLE_NOTICE = '<h2>Google Analytics</h2><p>Optional Google Analytics runs after consent.</p>'
+CLARITY_NOTICE = '<h2>Microsoft Clarity</h2><p>Optional session replay runs after separate consent.</p>'
 
 
 def fingerprint(directory):
@@ -78,7 +81,8 @@ def fixture(directory):
 class ProductionBuildTests(unittest.TestCase):
     def build(self, source, output, **kwargs):
         return production.build(source, output, privacy_template=PRIVACY,
-                                google_privacy_template=GOOGLE_NOTICE, **kwargs)
+                                google_privacy_template=GOOGLE_NOTICE,
+                                clarity_privacy_template=CLARITY_NOTICE, **kwargs)
 
     def test_domain_indexing_sitemap_and_source_immutability(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -103,6 +107,7 @@ class ProductionBuildTests(unittest.TestCase):
                              f'User-agent: *\nAllow: /\nSitemap: {NEW}/sitemap.xml\n')
             self.assertNotIn('/404/', (output / 'sitemap.xml').read_text())
             self.assertIn('Google Analytics is not enabled', (output / 'privacy/index.html').read_text())
+            self.assertIn('Microsoft Clarity session replay is not enabled', (output / 'privacy/index.html').read_text())
             self.assertNotIn('Old privacy notice', (output / 'privacy/index.html').read_text())
             self.assertNotIn('/analytics.js', (output / 'index.html').read_text())
 
@@ -159,6 +164,18 @@ class ProductionBuildTests(unittest.TestCase):
                 with self.subTest(measurement=measurement), self.assertRaises(ValueError):
                     self.build(source, output, measurement_id=measurement)
                 self.assertFalse(output.exists())
+            for clarity in ('project/id', 'UPPER12345', 'abc def', 'abc\" onload=\"bad',
+                            'abc?query', 'abc#fragment', 'abc\n', 'a' * 65, 123, False):
+                with self.subTest(clarity=clarity), self.assertRaises(ValueError):
+                    self.build(source, output, clarity_id=clarity)
+                self.assertFalse(output.exists())
+            self.build(source, output, measurement_id='G-ABCDEF1234', clarity_id='valid123')
+            before = fingerprint(output)
+            for settings in ({'measurement_id': 'G-invalid', 'clarity_id': 'valid123'},
+                             {'measurement_id': 'G-ABCDEF1234', 'clarity_id': 'bad/id'}):
+                with self.subTest(settings=settings), self.assertRaises(ValueError):
+                    self.build(source, output, **settings)
+                self.assertEqual(fingerprint(output), before)
 
     def test_configured_ga4_injects_external_consent_module_and_matching_notice(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -169,15 +186,109 @@ class ProductionBuildTests(unittest.TestCase):
             self.assertEqual(result['ga4'], 'configured with consent required')
             for path in output.rglob('*.html'):
                 content = path.read_text()
-                self.assertEqual(content.count('src="/analytics.js"'), 1)
+                self.assertEqual(content.count('src="/analytics.js?v=2"'), 1)
                 self.assertIn('data-ga4-id="G-ABCDEF1234"', content)
                 self.assertIn('data-host="sampsonheavydiesel.com"', content)
-                self.assertIn('href="/analytics.css"', content)
+                self.assertIn('href="/analytics.css?v=2"', content)
                 self.assertNotIn('gtag(', content)
             self.assertIn(GOOGLE_NOTICE, (output / 'privacy/index.html').read_text())
             (source / 'analytics.js').unlink()
             with self.assertRaisesRegex(ValueError, 'requires analytics.js'):
                 self.build(source, output, measurement_id='G-ABCDEF1234')
+
+    def test_all_provider_combinations_have_independent_attributes_notices_and_csp(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            source = fixture(directory)
+            for ga4, clarity in ((None, None), ('G-ABCDEF1234', None),
+                                 (None, 'abcde12345'), ('G-ABCDEF1234', 'abcde12345')):
+                with self.subTest(ga4=ga4, clarity=clarity):
+                    output = directory / 'production'
+                    result = self.build(source, output, measurement_id=ga4, clarity_id=clarity)
+                    self.assertEqual(result['ga4'] != 'disabled', bool(ga4))
+                    self.assertEqual(result['clarity'] != 'disabled', bool(clarity))
+                    for path in output.rglob('*.html'):
+                        content = path.read_text()
+                        self.assertEqual(content.count('src="/analytics.js?v=2"'), int(bool(ga4 or clarity)))
+                        self.assertEqual(content.count('href="/analytics.css?v=2"'), int(bool(ga4 or clarity)))
+                        self.assertEqual('data-ga4-id=' in content, bool(ga4))
+                        self.assertEqual('data-clarity-id=' in content, bool(clarity))
+                        self.assertEqual('data-public-paths=' in content, bool(clarity))
+                        if clarity:
+                            encoded = html.escape(json.dumps(['/', '/privacy/', '/services/'],
+                                                             separators=(',', ':')), quote=True)
+                            self.assertIn(f'data-public-paths="{encoded}"', content)
+                        if ga4 or clarity:
+                            self.assertIn('data-host="sampsonheavydiesel.com"', content)
+                        self.assertNotIn('src="https://www.clarity.ms/', content)
+                    privacy = (output / 'privacy/index.html').read_text()
+                    self.assertEqual(GOOGLE_NOTICE in privacy, bool(ga4))
+                    self.assertEqual(CLARITY_NOTICE in privacy, bool(clarity))
+                    self.assertEqual('Google Analytics is not enabled' in privacy, not bool(ga4))
+                    self.assertEqual('Microsoft Clarity session replay is not enabled' in privacy, not bool(clarity))
+                    self.assertNotIn('{{', privacy)
+                    headers = (output / '_headers').read_text()
+                    self.assertEqual('https://www.clarity.ms' in headers, bool(clarity))
+                    self.assertEqual('https://c.bing.com' in headers, bool(clarity))
+
+    def test_clarity_only_requires_consent_assets_before_replacing_output(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            source = fixture(directory)
+            output = directory / 'production'
+            self.build(source, output)
+            before = fingerprint(output)
+            for name in ('analytics.js', 'analytics.css'):
+                path = source / name
+                content = path.read_text()
+                path.unlink()
+                with self.subTest(asset=name), self.assertRaisesRegex(ValueError, 'requires analytics.js'):
+                    self.build(source, output, clarity_id='abcde12345')
+                self.assertEqual(fingerprint(output), before)
+                path.write_text(content)
+
+    def test_privacy_requires_exactly_one_placeholder_per_provider_before_mutation(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            source = fixture(directory)
+            output = directory / 'production'
+            for template in ('{{GOOGLE_ANALYTICS_NOTICE}}', '{{CLARITY_NOTICE}}',
+                             PRIVACY + '{{CLARITY_NOTICE}}', PRIVACY + '{{GOOGLE_ANALYTICS_NOTICE}}'):
+                with self.subTest(template=template), self.assertRaisesRegex(ValueError, 'placeholder'):
+                    production.build(source, output, privacy_template=template)
+                self.assertFalse(output.exists())
+
+    def test_clarity_csp_is_limited_to_provider_roles(self):
+        headers = production.security_headers(NEW, clarity_enabled=True)
+        csp = headers.split('Content-Security-Policy: ', 1)[1].split('\n', 1)[0]
+        directives = {part.split(' ', 1)[0]: part.partition(' ')[2]
+                      for part in csp.split('; ')}
+        self.assertIn('https://www.clarity.ms', directives['script-src'])
+        self.assertIn('https://scripts.clarity.ms', directives['script-src'])
+        self.assertNotIn('https://*.clarity.ms', directives['script-src'])
+        self.assertNotIn('https://c.bing.com', directives['script-src'])
+        self.assertIn('https://*.clarity.ms', directives['connect-src'])
+        self.assertNotIn('https://c.bing.com', directives['connect-src'])
+        self.assertIn('https://*.clarity.ms', directives['img-src'])
+        self.assertIn('https://c.bing.com', directives['img-src'])
+        self.assertEqual(directives['default-src'], "'self'")
+        self.assertNotIn("'unsafe-inline'", headers)
+        self.assertNotIn("'unsafe-eval'", headers)
+        self.assertTrue(all(len(line) <= 2000 for line in headers.splitlines()))
+
+    def test_replay_paths_reject_unsafe_or_unpublished_sitemap_urls_before_mutation(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            source = fixture(directory)
+            output = directory / 'production'
+            path = source / 'sitemap.xml'
+            sitemap = path.read_text()
+            for location in (OLD + '/?name=private', OLD + '/#private',
+                             'https://other.example/', OLD + '/unknown/', OLD + '/404/'):
+                path.write_text(sitemap.replace(OLD + '/</loc>', location + '</loc>', 1))
+                with self.subTest(location=location), self.assertRaisesRegex(ValueError, 'Sitemap'):
+                    self.build(source, output, clarity_id='valid123')
+                self.assertFalse(output.exists())
 
     def test_security_policy_keeps_gallery_and_provider_endpoints_without_broad_execution(self):
         headers = production.security_headers(NEW)

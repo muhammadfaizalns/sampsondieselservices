@@ -18,6 +18,7 @@ DEFAULT_ORIGIN = 'https://sampsonheavydiesel.com'
 MARKER = '.sampson-production-build'
 ROBOTS = re.compile(r'<meta\b(?=[^>]*\bname\s*=\s*[\"\']robots[\"\'])[^>]*>', re.I)
 GA4_ID = re.compile(r'G-[A-Z0-9]{10}\Z')
+CLARITY_ID = re.compile(r'[a-z0-9]{1,64}\Z')
 STATIC_EXTENSIONS = {
     '.html', '.css', '.js', '.mjs', '.json', '.xml', '.txt', '.glb',
     '.png', '.webp', '.svg', '.jpg', '.jpeg', '.gif', '.avif', '.ico',
@@ -36,6 +37,15 @@ def measurement_settings(value):
     return value
 
 
+def clarity_settings(value):
+    """Clarity project IDs are public identifiers, not arbitrary script or URL values."""
+    if value in (None, ''):
+        return None
+    if not isinstance(value, str) or not CLARITY_ID.fullmatch(value):
+        raise ValueError('CLARITY_PROJECT_ID must contain 1 to 64 lowercase letters or digits.')
+    return value
+
+
 def copy_filter(directory, names):
     ignored = []
     for name in names:
@@ -48,17 +58,20 @@ def copy_filter(directory, names):
     return ignored
 
 
-def security_headers(origin):
+def security_headers(origin, clarity_enabled=False):
     """Headers target static assets; host redirects are configured separately in Cloudflare."""
+    clarity_scripts = ' https://www.clarity.ms https://scripts.clarity.ms' if clarity_enabled else ''
+    clarity_connections = ' https://*.clarity.ms' if clarity_enabled else ''
+    clarity_images = ' https://*.clarity.ms https://c.bing.com' if clarity_enabled else ''
     csp = '; '.join([
         "default-src 'self'",
-        "script-src 'self' 'wasm-unsafe-eval' https://static.cloudflareinsights.com https://www.googletagmanager.com",
+        "script-src 'self' 'wasm-unsafe-eval' https://static.cloudflareinsights.com https://www.googletagmanager.com" + clarity_scripts,
         "script-src-attr 'none'",
         "style-src 'self'",
         "style-src-attr 'none'",
-        "img-src 'self' data: blob: https://*.google-analytics.com",
+        "img-src 'self' data: blob: https://*.google-analytics.com" + clarity_images,
         "font-src 'self'",
-        "connect-src 'self' blob: https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
+        "connect-src 'self' blob: https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com" + clarity_connections,
         "media-src 'self'",
         "manifest-src 'self'",
         "worker-src 'none'",
@@ -101,18 +114,47 @@ https://:version.:worker.:account.workers.dev/*
     return headers
 
 
-def rewrite_html(source, previous_origin, origin, not_found=False, measurement_id=None):
+def rewrite_html(source, previous_origin, origin, not_found=False, measurement_id=None,
+                 clarity_id=None, public_paths=None):
     rendered = ROBOTS.sub('', source.replace(previous_origin, origin))
     indexing = 'noindex, follow' if not_found else 'index, follow, max-image-preview:large'
     additions = f'<meta name="robots" content="{indexing}">'
-    if measurement_id:
+    if measurement_id or clarity_id:
         host = html.escape(urlsplit(origin).hostname, quote=True)
-        additions += ('<link rel="stylesheet" href="/analytics.css">'
-                      f'<script src="/analytics.js" defer data-ga4-id="{measurement_id}" '
+        provider_attributes = ''
+        if measurement_id:
+            provider_attributes += f' data-ga4-id="{measurement_id}"'
+        if clarity_id:
+            provider_attributes += f' data-clarity-id="{clarity_id}"'
+            encoded_paths = html.escape(json.dumps(public_paths or [], separators=(',', ':')), quote=True)
+            provider_attributes += f' data-public-paths="{encoded_paths}"'
+        additions += ('<link rel="stylesheet" href="/analytics.css?v=2">'
+                      f'<script src="/analytics.js?v=2" defer{provider_attributes} '
                       f'data-host="{host}"></script>')
     if '</head>' not in rendered:
         raise ValueError('Production HTML is missing its closing head element.')
     return rendered.replace('</head>', additions + '</head>', 1)
+
+
+def published_paths(source, previous_origin):
+    """Only declared, local, existing sitemap paths may be replayed by Clarity."""
+    result = set()
+    for node in ET.parse(source / 'sitemap.xml').findall('.//{*}loc'):
+        location = node.text or ''
+        parsed = urlsplit(location)
+        path = parsed.path or '/'
+        if (location != previous_origin + path or not path.startswith('/')
+                or path.startswith('//') or '\\' in path):
+            raise ValueError('Sitemap must contain only canonical source URLs without queries or fragments.')
+        target = source / unquote(path).lstrip('/')
+        if target.is_dir():
+            target /= 'index.html'
+        if not target.is_file() or is_not_found(target.relative_to(source)):
+            raise ValueError('Sitemap replay paths must identify existing published pages.')
+        result.add(path)
+    if not result:
+        raise ValueError('Sitemap must declare at least one published page.')
+    return sorted(result)
 
 
 class Document(HTMLParser):
@@ -185,35 +227,47 @@ def validate(output, origin, previous_origin, active_models):
 
 
 def build(source, output, site_url=DEFAULT_ORIGIN, measurement_id=None,
-          privacy_template=None, google_privacy_template=None):
+          privacy_template=None, google_privacy_template=None, clarity_id=None,
+          clarity_privacy_template=None):
     source, output = Path(source).resolve(), Path(output).resolve()
     origin = normalize_origin(site_url)
     measurement_id = measurement_settings(measurement_id)
+    clarity_id = clarity_settings(clarity_id)
     if source == output or source in output.parents or output in source.parents:
         raise ValueError('Output must be separate from the source directory.')
     metadata = HomeMetadata((source / 'index.html').read_text())
     if len(metadata.canonicals) != 1:
         raise ValueError('Source homepage must have exactly one root canonical URL.')
     previous_origin = normalize_origin(metadata.canonicals[0])
+    public_paths = published_paths(source, previous_origin) if clarity_id else None
     manifest = json.loads((source / 'components.js').read_text().split('=', 1)[1].strip().rstrip(';'))
     active_models = {item['file'] for item in manifest}
     if not active_models or any(not re.fullmatch(r'[a-zA-Z0-9_-]+', name) for name in active_models):
         raise ValueError('Assembly manifest contains invalid model filenames.')
-    if measurement_id and any(not (source / name).is_file() for name in ('analytics.js', 'analytics.css')):
-        raise ValueError('Configured GA4 requires analytics.js and analytics.css in the source.')
+    if (measurement_id or clarity_id) and any(not (source / name).is_file() for name in ('analytics.js', 'analytics.css')):
+        raise ValueError('Configured analytics requires analytics.js and analytics.css in the source.')
     privacy_content = None
     if (source / 'privacy/index.html').is_file():
         if privacy_template is None:
             privacy_template = (ROOT / 'scripts/production-privacy.html').read_text()
         if privacy_template.count('{{GOOGLE_ANALYTICS_NOTICE}}') != 1:
             raise ValueError('Production privacy template must contain one Google Analytics notice placeholder.')
+        if privacy_template.count('{{CLARITY_NOTICE}}') != 1:
+            raise ValueError('Production privacy template must contain one Clarity notice placeholder.')
         if measurement_id:
             if google_privacy_template is None:
                 google_privacy_template = (ROOT / 'scripts/production-google-privacy.html').read_text()
             google_notice = google_privacy_template
         else:
             google_notice = '<h2>Google Analytics</h2><p>Google Analytics is not enabled on this website.</p>'
-        privacy_content = privacy_template.replace('{{GOOGLE_ANALYTICS_NOTICE}}', google_notice)
+        if clarity_id:
+            if clarity_privacy_template is None:
+                clarity_privacy_template = (ROOT / 'scripts/production-clarity-privacy.html').read_text()
+            clarity_notice = clarity_privacy_template
+        else:
+            clarity_notice = '<h2>Microsoft Clarity</h2><p>Microsoft Clarity session replay is not enabled on this website.</p>'
+        privacy_content = (privacy_template.replace('{{GOOGLE_ANALYTICS_NOTICE}}', google_notice)
+                           .replace('{{CLARITY_NOTICE}}', clarity_notice))
     if output.exists():
         if not (output / MARKER).is_file():
             raise ValueError('Refusing to overwrite a directory not created by this builder.')
@@ -237,13 +291,15 @@ def build(source, output, site_url=DEFAULT_ORIGIN, measurement_id=None,
                 if replacements != 1:
                     raise ValueError('Privacy page is missing its legal content container.')
             path.write_text(rewrite_html(source_html, previous_origin, origin,
-                                        is_not_found(path.relative_to(output)), measurement_id))
+                                        is_not_found(path.relative_to(output)), measurement_id,
+                                        clarity_id, public_paths))
         elif path.suffix == '.xml':
             path.write_text(path.read_text().replace(previous_origin, origin))
     (output / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {origin}/sitemap.xml\n')
-    (output / '_headers').write_text(security_headers(origin))
+    (output / '_headers').write_text(security_headers(origin, bool(clarity_id)))
     result = validate(output, origin, previous_origin, active_models)
     result['ga4'] = 'configured with consent required' if measurement_id else 'disabled'
+    result['clarity'] = 'configured with separate consent required' if clarity_id else 'disabled'
     return result
 
 
@@ -253,4 +309,5 @@ if __name__ == '__main__':
     parser.add_argument('--output', type=Path, default=ROOT / '_production')
     args = parser.parse_args()
     print(json.dumps(build(ROOT / 'dist', args.output, args.site_url,
-                           os.environ.get('GA4_MEASUREMENT_ID'))))
+                           os.environ.get('GA4_MEASUREMENT_ID'),
+                           clarity_id=os.environ.get('CLARITY_PROJECT_ID'))))
