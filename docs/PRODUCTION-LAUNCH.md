@@ -2,19 +2,19 @@
 
 Updated 18 October 2026. **https://sampsonheavydiesel.com is live** on Cloudflare Pages project **sampson-heavy-diesel**. Automatic `main` deployment of commit `28fc732` passed. Live checks confirmed thirteen indexable pages, ten model assets, real 404 responses and security headers. HTTP, www and the production Pages hostname redirect to the HTTPS apex, preserving paths and query strings. GitHub Pages remains a separate, public, nonindexed review site. No service guarantees complete security, legal compliance or first place in search.
 
-Confirmed dashboard settings: Full (strict) SSL, Always Use HTTPS, minimum TLS 1.2, TLS 1.3, WAF and DDoS protection. DNSSEC DS records propagated through two public resolvers, with DNS validation confirmed. Automatic preview branches are disabled; historical previews remain noindex. Cloudflare Web Analytics inserts exactly one beacon in the live browser. Its dashboard showed nine page views and nine visits during launch checks; these include test traffic. GA4 is off because its Measurement ID was explicitly deferred. Search Console and Bing ownership are not configured. Search Console opened under an existing Google account. The user chose Clive’s account for ownership and will switch accounts before verification.
+Confirmed dashboard settings: Full (strict) SSL, Always Use HTTPS, minimum TLS 1.2, TLS 1.3, WAF and DDoS protection. DNSSEC DS records propagated through two public resolvers, with DNS validation confirmed. Automatic preview branches are disabled; historical previews remain noindex. Cloudflare Web Analytics inserts exactly one beacon in the live browser. Its dashboard showed nine page views and nine visits during launch checks; these include test traffic. GA4 is off because its Measurement ID was explicitly deferred. Google Search Console domain ownership is verified in Clive Sampson's account. Google accepted the sitemap and discovered thirteen pages. Homepage and mobile page passed explicit live tests; three indexing requests, including services hub, were accepted. Indexing remains unconfirmed. Search generative AI is confirmed **Include**. Bing ownership is DNS verified; its sitemap is processing.
 
 ## 1. Confirm ownership and account protection
 
-Use accounts controlled by Clive or the business. Invite helpers separately; do not share passwords. Enable passkeys or two factor authentication for Cloudflare, GitHub and Google. Store recovery codes offline and confirm recovery email access. On 18 October 2026, Cloudflare showed two factor authentication as **Inactive**. The owner must enrol a security key or authenticator personally and retain recovery codes privately. GitHub and Google account factors and recovery access remain unverified. Account protection does not add visitor page load work.
+Use accounts controlled by Clive or the business. Invite helpers separately; do not share passwords. Enable passkeys or two factor authentication for Cloudflare, GitHub and Google. Keep recovery codes offline and confirm recovery access. On 18 October 2026, Cloudflare showed two factor authentication as **Inactive**. The owner must enrol a security key or authenticator personally and retain recovery codes privately. GitHub and Google account factors and recovery access remain unverified. Account protection does not add visitor page load work.
 
-Registrar review confirmed **Active** status, automatic renewal enabled, WHOIS redaction enabled and transfer unlocking disabled because registration is within its first 60 days. Keep transfer protection enabled after that period. Contact accuracy, payment validity and recovery access still need owner confirmation. Keep Cloudflare nameservers. Accept provider terms personally when prompted.
+Registrar review confirmed **Active** status, automatic renewal enabled, WHOIS redaction enabled and transfer unlocking disabled because registration is within its first 60 days. Keep transfer protection enabled after that period. Contact accuracy, payment validity and recovery access still need owner confirmation. Keep Cloudflare nameservers. Accept provider terms personally.
 
 DNSSEC is enabled, with DS propagation confirmed through `1.1.1.1` and `8.8.8.8`, and validation confirmed through Google DNS. Keep it enabled. Cloudflare Registrar manages the registrar side. Export DNS before changes; preserve mail and verification records. [DNSSEC guidance](https://developers.cloudflare.com/dns/dnssec/).
 
 ## 2. Verify Pages deployment
 
-Open **Workers & Pages > sampson-heavy-diesel**. Connected repository is `muhammadfaizalns/sampsondieselservices`. GitHub access should be restricted to selected repositories.
+Open **Workers & Pages > sampson-heavy-diesel**. Connected repository is `muhammadfaizalns/sampsondieselservices`. Restrict GitHub access to this repository.
 
 | Setting | Value |
 | --- | --- |
@@ -38,7 +38,7 @@ The configured `www` record is a proxied **A** record pointing to reserved place
 http.host eq "www.sampsonheavydiesel.com"
 ```
 
-Use dynamic target `concat("https://sampsonheavydiesel.com", http.request.uri.path)`, status **301**, and **Preserve query string**. This address exists only to route requests through Cloudflare's redirect. Verify the matching path reaches the apex. [Redirect example](https://developers.cloudflare.com/rules/url-forwarding/examples/redirect-www-to-root/).
+Use dynamic target `concat("https://sampsonheavydiesel.com", http.request.uri.path)`, status **301**, and **Preserve query string**. The placeholder routes requests through the verified redirect. [Redirect example](https://developers.cloudflare.com/rules/url-forwarding/examples/redirect-www-to-root/).
 
 The account **Bulk Redirects** rule sends `sampson-heavy-diesel.pages.dev` to `https://sampsonheavydiesel.com` with a verified 301, preserving query string and path suffix. Keep preview access protection separate. Historical previews retain the production artifact's `noindex` headers. [Pages hostname redirect](https://developers.cloudflare.com/pages/how-to/redirect-to-custom-domain/).
 
@@ -62,11 +62,11 @@ Test consent and events in Realtime. Mark contact events as key events after the
 
 ## 6. Connect search services
 
-In [Google Search Console](https://search.google.com/search-console/), add Domain property `sampsonheavydiesel.com`. Add its TXT verification record in Cloudflare DNS, then verify and keep the record. Submit `https://sampsonheavydiesel.com/sitemap.xml`. Inspect homepage and service pages with **Test live URL**; confirm fetching, canonical and indexing eligibility before requesting indexing. [Verification](https://support.google.com/webmasters/answer/9008080?hl=en).
+On 18 October 2026, [Google Search Console](https://search.google.com/search-console/) verified Domain property `sampsonheavydiesel.com` in Clive Sampson's account using one Cloudflare TXT record. Keep that DNS record; do not copy its token into the repository. Sitemap `https://sampsonheavydiesel.com/sitemap.xml` shows **Success**, with thirteen discovered pages and zero videos. Homepage and `/services/mobile-truck-mechanic/` passed explicit live tests. Three indexing requests, also including `/services/`, entered Google's priority queue after eligibility checks. Mobile inspection confirmed smartphone access, successful fetch, indexing allowed, matching canonical and one valid breadcrumb. Initial status was **Discovered, currently not indexed**; queued requests do not confirm indexing. [Verification](https://support.google.com/webmasters/answer/9008080?hl=en).
 
-Add [Bing Webmaster Tools](https://www.bing.com/webmasters/) through Search Console import. Search Console and Bing ownership remain pending. Under Cloudflare **Configure AI bot policies**, Search, Agent and Training are currently **Allow**, with bot preference synchronization off. Keep desired search crawlers accessible. Training restrictions may affect mixed purpose crawlers under current policy; assess before enabling them. Check actual request outcomes. No AI provider guarantees inclusion or first position. [Current AI bot policy](https://developers.cloudflare.com/bots/additional-configurations/block-ai-bots/).
+[Bing Webmaster Tools](https://www.bing.com/webmasters/) confirms Clive as the sole administrator, verified by DNS CNAME. Its accepted sitemap is **Processing**: one known sitemap, zero errors/warnings; URLs not yet read. No Search Console access was granted. Keep verification DNS. Under Cloudflare **Configure AI bot policies**, Search, Agent and Training are currently **Allow**, with bot preference synchronization off. Keep desired search crawlers accessible. Training restrictions may affect mixed purpose crawlers under current policy; assess before enabling them. Check actual request outcomes. No AI provider guarantees inclusion or first position. [Current AI bot policy](https://developers.cloudflare.com/bots/additional-configurations/block-ai-bots/).
 
-Create an owner controlled [Google Business Profile](https://business.google.com/) using confirmed details. Postcode **3815** is confirmed; exact suburb, hours and customer access are not. Hide the address if customers cannot visit. Do not invent branches or keyword additions to the business name. [Service area rules](https://support.google.com/business/answer/9157481?hl=en).
+Basic [Google Business Profile](https://business.google.com/) is created in Clive's account after authorized terms acceptance: exact business name, **Diesel engine repair service**, Bunyip VIC service area, phone and website. Customers cannot visit; no location is public. Private address went only to Google's hidden verification and must never enter the repository or website. No hours, chat or marketing opt in were added. Google requires the owner to record a real business verification video; setup is left at **Start recording**, unverified and not publicly visible. [Service area rules](https://support.google.com/business/answer/9157481?hl=en).
 
 ## 7. Check the live release and maintain it
 
@@ -76,9 +76,9 @@ Launch browser checks rendered the 3D canvas without warnings or errors. The 390
 - Check HTTP and www redirects, valid certificate, security headers and browser CSP errors.
 - Check production canonicals, social metadata, root robots.txt and sitemap; error and preview pages remain noindex.
 - Test phone, SMS, navigation, lookup and models on phone, tablet and desktop.
-- Verify analytics consent, provider delivery and no duplicate beacons.
+- Verify analytics consent, delivery and no duplicate beacons.
 - Keep preview access and the nonindexed GitHub review separate from production.
 
-Keep repository, artwork and DNS backups. Revert a bad Git commit and let Pages rebuild, or use Pages deployment rollback while preparing a fix. Recheck the custom domain afterward. Do not delete the domain or zone to roll back content. Review current plan limits and billing before accepting upgrades. Domain renewal remains payable.
+Keep repository, artwork and DNS backups. Revert a bad Git commit and let Pages rebuild, or use Pages deployment rollback while preparing a fix. Recheck the custom domain afterward. Do not delete the domain or zone to roll back content. Check plan limits before upgrades; domain renewal remains payable.
 
-Confirm operator identity, ABN, hours, licence requirements and job terms with Clive. Hosting does not certify business compliance. Labour hire advertising remains withheld pending licensing clarification. Check uptime and enquiries regularly; compare search clicks, qualified enquiries and bookings. Use real job evidence rather than repetitive suburb pages.
+Confirm operator identity, ABN, hours, licence requirements and job terms with Clive. Hosting does not certify business compliance. Labour hire advertising remains withheld pending licensing clarification. Compare search clicks, qualified enquiries and bookings. Use real job evidence rather than repetitive suburb pages.
