@@ -1,6 +1,6 @@
 # Sampson Heavy Diesel Services
 
-Static website for Clive Sampson's truck, heavy equipment and agricultural machinery services across Victoria, Australia. The site uses an equipment focused Sampson logo, charcoal and high visibility yellow branding, a separate illustrated Clive Sampson profile, direct phone contact, and complete 3D assemblies and machinery.
+Static website for Clive Sampson's truck, heavy equipment and agricultural machinery services across Victoria, Australia. The site uses an equipment focused Sampson logo, charcoal and high visibility yellow branding, a text profile for Clive Sampson, direct phone contact, and complete 3D assemblies and machinery.
 
 Business contact: **0474 372 852**. Website copy uses **Sampson Heavy Diesel Services**, without an apostrophe. Do not introduce hyphens, en dashes or em dashes into visible website copy.
 
@@ -101,7 +101,7 @@ Domain setup and Google Business Profile creation follow website approval. Do no
 
 ## Third party assets
 
-Retain the model, font, Three.js and Meshoptimizer licence files and credits under `dist/assets/` and `dist/credits/`. Model sources and adaptations are documented in the website and source records. Vicmap data is attributed to the State of Victoria, Department of Transport and Planning under CC BY 4.0. The supplied original photograph, standalone illustrated Clive Sampson profile, commissioned equipment logo and vehicle or machinery illustrations remain distinct from third party asset licences. The business logo does not use Clive’s portrait.
+Retain the model, font, Three.js and Meshoptimizer licence files and credits under `dist/assets/` and `dist/credits/`. Model sources and adaptations are documented in the website and source records. Vicmap data is attributed to the State of Victoria, Department of Transport and Planning under CC BY 4.0. The commissioned equipment logo and vehicle or machinery illustrations remain distinct from third party asset licences. Clive’s supplied photograph and illustrated portrait are retained source artwork and are not displayed or linked in the current website or Person metadata. The business logo does not use Clive’s portrait.
 
 No blanket licence for the business branding or the entire repository is granted by the included third party licence files.
 
