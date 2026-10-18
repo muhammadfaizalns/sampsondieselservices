@@ -6,9 +6,9 @@ Confirmed dashboard settings: Full (strict) SSL, Always Use HTTPS, minimum TLS 1
 
 ## 1. Confirm ownership and account protection
 
-Use accounts controlled by Clive or the business. Invite helpers separately; do not share passwords. Enable passkeys or two factor authentication for Cloudflare, GitHub and Google. Store recovery codes offline and confirm recovery email access. These owner settings still need verification.
+Use accounts controlled by Clive or the business. Invite helpers separately; do not share passwords. Enable passkeys or two factor authentication for Cloudflare, GitHub and Google. Store recovery codes offline and confirm recovery email access. On 18 October 2026, Cloudflare showed two factor authentication as **Inactive**. The owner must enrol a security key or authenticator personally and retain recovery codes privately. GitHub and Google account factors and recovery access remain unverified. Account protection does not add visitor page load work.
 
-Under **Domain Registration > Manage Domains > sampsonheavydiesel.com**, check contact information, auto renewal, payment method and transfer lock. Confirm domain status is **Active**. Keep Cloudflare nameservers. Accept provider terms personally when prompted.
+Registrar review confirmed **Active** status, automatic renewal enabled, WHOIS redaction enabled and transfer unlocking disabled because registration is within its first 60 days. Keep transfer protection enabled after that period. Contact accuracy, payment validity and recovery access still need owner confirmation. Keep Cloudflare nameservers. Accept provider terms personally when prompted.
 
 DNSSEC is enabled, with DS propagation confirmed through `1.1.1.1` and `8.8.8.8`, and validation confirmed through Google DNS. Keep it enabled. Cloudflare Registrar manages the registrar side. Export DNS before changes; preserve mail and verification records. [DNSSEC guidance](https://developers.cloudflare.com/dns/dnssec/).
 
