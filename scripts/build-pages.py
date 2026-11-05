@@ -276,7 +276,7 @@ def ld(extra=None,path='/',title=None,description=None):
  for entity in extra or []:
   if entity.get('@type')=='Service' and entity.get('url')==ORIGIN+path:page['mainEntity']={'@id':entity['@id']}
   if entity.get('@type')=='BreadcrumbList':page['breadcrumb']={'@id':entity['@id']}
- graph=[org,{'@type':'Person','@id':ORIGIN+'/#clive-sampson','name':'Clive Sampson','jobTitle':'Heavy diesel mechanic','telephone':'+61474372852','url':ORIGIN+'/#clive','worksFor':{'@id':ORIGIN+'/#business'}},{'@type':'WebSite','@id':ORIGIN+'/#website','url':ORIGIN+'/','name':NAME,'inLanguage':'en-AU','publisher':{'@id':ORIGIN+'/#business'}},page]
+ graph=[org,{'@type':'Person','@id':ORIGIN+'/#clive-sampson','name':'Clive Sampson','jobTitle':'Heavy diesel mechanic','telephone':'+61474372852','url':ORIGIN+'/#clive','worksFor':{'@id':ORIGIN+'/#business'}},{'@type':'WebSite','@id':ORIGIN+'/#website','url':ORIGIN+'/','name':NAME,'alternateName':'Sampson Heavy Diesel','inLanguage':'en-AU','publisher':{'@id':ORIGIN+'/#business'}},page]
  graph.extend(extra or [])
  return '<script type="application/ld+json">'+json.dumps({'@context':'https://schema.org','@graph':graph},ensure_ascii=False)+'</script>'
 
@@ -289,7 +289,7 @@ def breadcrumbs(path,label):
  items.append({'@type':'ListItem','position':len(items)+1,'name':label,'item':ORIGIN+path})
  return {'@type':'BreadcrumbList','@id':ORIGIN+path+'#breadcrumb','itemListElement':items}
 
-favicon=re.search(r'  <link rel="icon"[^>]+>',source).group(0)
+favicon=re.search(r'  <link rel="icon".*?<link rel="apple-touch-icon"[^>]+>',source).group(0)
 def head(title,desc,path,extra=None,noindex=False):
  return f'''<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#171a18"><title>{html.escape(title)}</title><meta name="description" content="{html.escape(desc,quote=True)}"><link rel="canonical" href="{ORIGIN+path}"><meta property="og:title" content="{html.escape(title,quote=True)}"><meta property="og:description" content="{html.escape(desc,quote=True)}"><meta property="og:type" content="website"><meta property="og:image" content="{ORIGIN}/assets/sampson-equipment-logo.png"><meta property="og:image:alt" content="Sampson Heavy Diesel Services logo with bulldozer, truck, tractor and digger"><meta property="og:locale" content="en_AU"><meta name="twitter:card" content="summary"><meta property="og:url" content="{ORIGIN+path}">{favicon}<link rel="stylesheet" href="/style.css?v=11">{('<meta name="robots" content="noindex">' if noindex else '')}{ld(extra,path,title,desc)}</head><body><a class="skip-link" href="#main">Skip to content</a>{header}'''
 
