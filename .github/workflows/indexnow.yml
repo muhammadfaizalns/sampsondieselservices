@@ -1,0 +1,50 @@
+name: Notify search engines through IndexNow
+
+# After a website change reaches main and Cloudflare Pages has deployed it,
+# tell IndexNow search engines (Bing, Yandex, Seznam, Naver and others) which
+# sitemap URLs to recrawl. The key file is public by design.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'dist/**'
+      - 'scripts/build-pages.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: true
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    env:
+      SITE: https://sampsonheavydiesel.com
+      KEY: adc0f76ed9c4a8552cba53242bcd58b2
+    steps:
+      - name: Wait for the Cloudflare deployment to serve the key file
+        run: |
+          for attempt in $(seq 1 20); do
+            if [ "$(curl -fsS "$SITE/$KEY.txt" 2>/dev/null)" = "$KEY" ]; then
+              echo "Key file is live."
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "Key file did not become available on $SITE." >&2
+          exit 1
+      - name: Submit sitemap URLs
+        run: |
+          sleep 60
+          urls=$(curl -fsS "$SITE/sitemap.xml" | grep -oE '<loc>[^<]+</loc>' | sed -E 's#</?loc>##g')
+          payload=$(printf '%s\n' "$urls" | python3 -c "import json,os,sys; u=[l.strip() for l in sys.stdin if l.strip()]; print(json.dumps({'host':'sampsonheavydiesel.com','key':os.environ['KEY'],'keyLocation':os.environ['SITE']+'/'+os.environ['KEY']+'.txt','urlList':u}))")
+          echo "$payload"
+          status=$(curl -sS -o response.txt -w '%{http_code}' -X POST https://api.indexnow.org/indexnow \
+            -H 'Content-Type: application/json; charset=utf-8' --data "$payload")
+          cat response.txt; echo
+          echo "IndexNow responded $status"
+          case "$status" in 200|202) ;; *) exit 1 ;; esac
