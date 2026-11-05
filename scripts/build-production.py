@@ -170,6 +170,8 @@ class Document(HTMLParser):
         for key in ('href', 'src', 'poster', 'action'):
             if key in attrs:
                 self.refs.append(attrs[key])
+        if attrs.get('srcset'):
+            self.refs.extend(part.split()[0] for part in attrs['srcset'].split(',') if part.strip())
         if tag == 'link' and attrs.get('rel') == 'canonical':
             self.canonical.append(attrs.get('href', ''))
         if tag == 'meta' and attrs.get('name', '').lower() == 'robots':
