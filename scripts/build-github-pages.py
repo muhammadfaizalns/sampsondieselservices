@@ -10,6 +10,7 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 MARKER = '.sampson-review-build'
+SRCSET = re.compile(r'(?P<start>\bsrcset\s*=\s*)(?P<q>["\'])(?P<value>[^"\']*)(?P=q)', re.I)
 ATTR = re.compile(r'(?P<start>\b(?:href|src|action|poster)\s*=\s*[\"\'])(?P<url>/(?!/)[^\"\']*)', re.I)
 CSS_URL = re.compile(r'(?P<start>url\(\s*[\"\']?)(?P<url>/(?!/)[^\s)\"\']*)', re.I)
 ROBOTS = re.compile(r'<meta\b(?=[^>]*\bname\s*=\s*[\"\']robots[\"\'])[^>]*>', re.I)
@@ -32,6 +33,9 @@ def prefix_url(url, base_path):
 def rewrite_html(text, old_url, site_url, base_path):
     # Handle attributes before metadata so absolute target URLs are not prefixed twice.
     text = ATTR.sub(lambda m: m['start'] + prefix_url(m['url'], base_path), text)
+    text = SRCSET.sub(lambda m: m['start'] + m['q'] + ', '.join(
+        ' '.join([prefix_url(part.split()[0], base_path)] + part.split()[1:])
+        for part in m['value'].split(',') if part.strip()) + m['q'], text)
     text = text.replace(old_url, site_url)
     text = ROBOTS.sub('', text)
     return text.replace('</head>', '<meta name="robots" content="noindex, nofollow, noarchive"></head>', 1)
@@ -50,6 +54,8 @@ class Document(HTMLParser):
         for key in ('href', 'src', 'action', 'poster'):
             if key in attrs:
                 self.refs.append(attrs[key])
+        if attrs.get('srcset'):
+            self.refs.extend(part.split()[0] for part in attrs['srcset'].split(',') if part.strip())
         if tag == 'meta':
             self.metas[attrs.get('name') or attrs.get('property')] = attrs.get('content', '')
         if tag == 'link' and attrs.get('rel') == 'canonical':
