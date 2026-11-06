@@ -14,7 +14,7 @@ from site_urls import HomeMetadata, normalize_origin
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_ORIGIN = 'https://sampsonheavydiesel.com'
+DEFAULT_ORIGIN = 'https://sampsonheavydiesel.com.au'
 MARKER = '.sampson-production-build'
 ROBOTS = re.compile(r'<meta\b(?=[^>]*\bname\s*=\s*[\"\']robots[\"\'])[^>]*>', re.I)
 GA4_ID = re.compile(r'G-[A-Z0-9]{10}\Z')
@@ -129,7 +129,7 @@ def rewrite_html(source, previous_origin, origin, not_found=False, measurement_i
             encoded_paths = html.escape(json.dumps(public_paths or [], separators=(',', ':')), quote=True)
             provider_attributes += f' data-public-paths="{encoded_paths}"'
         additions += ('<link rel="stylesheet" href="/analytics.css?v=3">'
-                      f'<script src="/analytics.js?v=3" defer{provider_attributes} '
+                      f'<script src="/analytics.js?v=4" defer{provider_attributes} '
                       f'data-host="{host}"></script>')
     if '</head>' not in rendered:
         raise ValueError('Production HTML is missing its closing head element.')

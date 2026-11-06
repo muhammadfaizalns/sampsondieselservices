@@ -6,7 +6,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-SITE_URL = 'https://sampsonheavydiesel.com'
+SITE_URL = 'https://sampsonheavydiesel.com.au'
 PRODUCTION_CONFIG = ROOT / 'scripts/production-config.json'
 
 

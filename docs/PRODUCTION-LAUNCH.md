@@ -1,6 +1,6 @@
 # Production launch: sampsonheavydiesel.com
 
-Updated 18 October 2026. **https://sampsonheavydiesel.com is live** on Cloudflare Pages project **sampson-heavy-diesel**. Automatic `main` deployment of commit `18e14f9` passed. Live checks confirmed thirteen indexable pages, ten model assets, real 404 responses and security headers. HTTP, www and the production Pages hostname redirect to the HTTPS apex, preserving paths and query strings. GitHub Pages remains a separate, public, nonindexed review site. Security, legal compliance and rankings cannot be guaranteed.
+Updated 6 November 2026: production moved to **https://sampsonheavydiesel.com.au** (see Domains); `.com` redirects. Original launch, 18 October 2026: **https://sampsonheavydiesel.com was live** on Cloudflare Pages project **sampson-heavy-diesel**. Automatic `main` deployment of commit `18e14f9` passed. Live checks confirmed thirteen indexable pages, ten model assets, real 404 responses and security headers. HTTP, www and the production Pages hostname redirect to the HTTPS apex, preserving paths and query strings. GitHub Pages remains a separate, public, nonindexed review site. Security, legal compliance and rankings cannot be guaranteed.
 
 Confirmed: Full (strict) SSL, HTTPS enforcement, TLS 1.2 minimum, TLS 1.3, WAF, DDoS protection and validated DNSSEC. Automatic preview branches are disabled; historical previews remain noindex. Cloudflare analytics works. GA4 consent and withdrawal checks passed; Realtime confirms received test visits. Clarity replay is separately consented and a masked test recording was received. Live phone and SMS delivery remains untested. Google and Bing ownership are verified, sitemaps accepted and indexing unconfirmed. Search generative AI remains **Include**. Google Business Profile awaits the owner's verification video.
 
@@ -30,17 +30,21 @@ The production deployment passed. `wrangler.jsonc` identifies this Pages project
 
 ## 3. Attach the purchased domain
 
-The apex domain is associated with Pages and serving HTTPS. For recovery, use **Pages project > Custom domains > Set up a domain** and confirm DNS. Keep the zone in this account; wait for activation and certificate. Do not create only a manual CNAME: Pages must associate the hostname first. Preserve unrelated DNS records. [Custom domains](https://developers.cloudflare.com/pages/configuration/custom-domains/).
+## Domains (updated 6 November 2026)
 
-The configured `www` record is a proxied **A** record pointing to reserved placeholder `192.0.2.1`. Its verified redirect uses **Rules > Redirect Rules** with exact hostname matching:
+**https://sampsonheavydiesel.com.au** is the primary production domain. It was registered with Crazy Domains, and its nameservers point to Cloudflare zone `sampsonheavydiesel.com.au` in the same account. `sampsonheavydiesel.com` stays registered through Cloudflare and only redirects.
 
-```text
-http.host eq "www.sampsonheavydiesel.com"
-```
+| Hostname | DNS (all proxied) | Behaviour |
+| --- | --- | --- |
+| `sampsonheavydiesel.com.au` | CNAME to `sampson-heavy-diesel.pages.dev`, Pages custom domain **active** | Serves the website |
+| `www.sampsonheavydiesel.com.au` | A `192.0.2.1` placeholder | Zone redirect rule, 301 to `https://sampsonheavydiesel.com.au` + path, query preserved |
+| `sampsonheavydiesel.com` | CNAME to `sampson-heavy-diesel.pages.dev` | Zone redirect rule, 301 to `.com.au` + path, query preserved |
+| `www.sampsonheavydiesel.com` | A `192.0.2.1` placeholder | Same redirect rule as the apex |
+| `sampson-heavy-diesel.pages.dev` | Pages | Account Bulk Redirect list `sampson_pages_redirect`, 301 to `https://sampsonheavydiesel.com.au` |
 
-Use dynamic target `concat("https://sampsonheavydiesel.com", http.request.uri.path)`, status **301**, and **Preserve query string**. The placeholder routes requests through the verified redirect. [Redirect example](https://developers.cloudflare.com/rules/url-forwarding/examples/redirect-www-to-root/).
+Both zones use SSL **Full (strict)**, Always Use HTTPS, minimum TLS 1.2 and TLS 1.3. Keep the Google and Bing verification records in the `.com` zone. Keep `.com` renewed permanently: the redirect only works while the domain is owned.
 
-The account **Bulk Redirects** rule sends `sampson-heavy-diesel.pages.dev` to `https://sampsonheavydiesel.com` with a verified 301, preserving query string and path suffix. Keep preview access protection separate. Historical previews retain the production artifact's `noindex` headers. [Pages hostname redirect](https://developers.cloudflare.com/pages/how-to/redirect-to-custom-domain/).
+To recover the Pages domain, use **Pages project > Custom domains > Set up a domain**. Pages must associate the hostname. Do not rely on a manual CNAME alone. Redirect rules use dynamic targets such as `concat("https://sampsonheavydiesel.com.au", http.request.uri.path)`, status **301**, with **Preserve query string**. [Custom domains](https://developers.cloudflare.com/pages/configuration/custom-domains/), [redirect example](https://developers.cloudflare.com/rules/url-forwarding/examples/redirect-www-to-root/), [Pages hostname redirect](https://developers.cloudflare.com/pages/how-to/redirect-to-custom-domain/).
 
 ## 4. Verify transport and security
 
