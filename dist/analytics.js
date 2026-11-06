@@ -2,7 +2,7 @@
   'use strict';
 
   var script = document.currentScript;
-  var host = 'sampsonheavydiesel.com';
+  var host = 'sampsonheavydiesel.com.au';
   if (!script || script.dataset.host !== host || window.location.hostname !== host ||
       window.location.protocol !== 'https:' || document.getElementById('analytics-preferences-panel')) return;
   var measurementId = /^G-[A-Z0-9]{10}$/.test(script.dataset.ga4Id || '') ? script.dataset.ga4Id : null;

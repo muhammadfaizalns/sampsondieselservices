@@ -15,7 +15,7 @@ spec = importlib.util.spec_from_file_location('production_build', ROOT / 'script
 production = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(production)
 OLD = 'https://source.example'
-NEW = 'https://sampsonheavydiesel.com'
+NEW = 'https://sampsonheavydiesel.com.au'
 PRIVACY = ('<h1>Privacy</h1><p>Cloudflare Web Analytics information.</p>'
            '{{GOOGLE_ANALYTICS_NOTICE}}{{CLARITY_NOTICE}}')
 GOOGLE_NOTICE = '<h2>Google Analytics</h2><p>Optional Google Analytics runs after consent.</p>'
@@ -186,9 +186,9 @@ class ProductionBuildTests(unittest.TestCase):
             self.assertEqual(result['ga4'], 'configured with consent required')
             for path in output.rglob('*.html'):
                 content = path.read_text()
-                self.assertEqual(content.count('src="/analytics.js?v=3"'), 1)
+                self.assertEqual(content.count('src="/analytics.js?v=4"'), 1)
                 self.assertIn('data-ga4-id="G-ABCDEF1234"', content)
-                self.assertIn('data-host="sampsonheavydiesel.com"', content)
+                self.assertIn('data-host="sampsonheavydiesel.com.au"', content)
                 self.assertIn('href="/analytics.css?v=3"', content)
                 self.assertNotIn('gtag(', content)
             self.assertIn(GOOGLE_NOTICE, (output / 'privacy/index.html').read_text())
@@ -209,7 +209,7 @@ class ProductionBuildTests(unittest.TestCase):
                     self.assertEqual(result['clarity'] != 'disabled', bool(clarity))
                     for path in output.rglob('*.html'):
                         content = path.read_text()
-                        self.assertEqual(content.count('src="/analytics.js?v=3"'), int(bool(ga4 or clarity)))
+                        self.assertEqual(content.count('src="/analytics.js?v=4"'), int(bool(ga4 or clarity)))
                         self.assertEqual(content.count('href="/analytics.css?v=3"'), int(bool(ga4 or clarity)))
                         self.assertEqual('data-ga4-id=' in content, bool(ga4))
                         self.assertEqual('data-clarity-id=' in content, bool(clarity))
@@ -219,7 +219,7 @@ class ProductionBuildTests(unittest.TestCase):
                                                              separators=(',', ':')), quote=True)
                             self.assertIn(f'data-public-paths="{encoded}"', content)
                         if ga4 or clarity:
-                            self.assertIn('data-host="sampsonheavydiesel.com"', content)
+                            self.assertIn('data-host="sampsonheavydiesel.com.au"', content)
                         self.assertNotIn('src="https://www.clarity.ms/', content)
                     privacy = (output / 'privacy/index.html').read_text()
                     self.assertEqual(GOOGLE_NOTICE in privacy, bool(ga4))

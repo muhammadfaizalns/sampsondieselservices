@@ -20,7 +20,7 @@ import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ORIGIN = 'https://sampsonheavydiesel.com'
+ORIGIN = 'https://sampsonheavydiesel.com.au'
 HOST = '127.0.0.1'
 PORT = 4178
 BASE = f'http://{HOST}:{PORT}'

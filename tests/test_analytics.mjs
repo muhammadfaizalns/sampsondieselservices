@@ -8,7 +8,7 @@ const storageKey = 'sampson.analyticsConsent.v2';
 const legacyKey = 'sampson.analyticsConsent.v1';
 const measurementId = 'G-ABC1234567';
 const clarityId = 'yzgu5ctzhl';
-const productionOrigin = 'https://sampsonheavydiesel.com';
+const productionOrigin = 'https://sampsonheavydiesel.com.au';
 const lifetime = 270 * 86400000;
 const legacyLifetime = 365 * 86400000;
 const publicPaths = ['/', '/services/', '/services/mobile-truck-mechanic/', '/privacy/'];
@@ -48,7 +48,7 @@ class Element {
   }
 }
 
-function setup({ hostname = 'sampsonheavydiesel.com', id = measurementId, clarity = '',
+function setup({ hostname = 'sampsonheavydiesel.com.au', id = measurementId, clarity = '',
   initialChoice, expiresAt = Date.now() + 60000, legacyChoice,
   legacyExpiresAt = Date.now() + legacyLifetime, storageBlocked = false, refusal = '',
   storageFailures = { set: false, remove: false }, cookieFailures = { get: false, set: false },
@@ -80,7 +80,7 @@ function setup({ hostname = 'sampsonheavydiesel.com', id = measurementId, clarit
   canonical.href = productionOrigin + canonicalPath;
   document.head.append(canonical);
   const script = document.createElement('script');
-  script.dataset = { ga4Id: id, clarityId: clarity, host: 'sampsonheavydiesel.com',
+  script.dataset = { ga4Id: id, clarityId: clarity, host: 'sampsonheavydiesel.com.au',
     publicPaths: JSON.stringify(paths) };
   document.currentScript = script;
   document.querySelector = selector => selector === 'link[rel="canonical"]' ? canonical :
@@ -554,7 +554,7 @@ test('legacy tab GA decline cannot be ignored by the migrated tab', () => {
 
 test('preview hosts and invalid provider IDs create no UI or remote requests', () => {
   for (const options of [
-    { hostname: 'localhost' }, { hostname: 'www.sampsonheavydiesel.com' }, { hostname: 'preview.pages.dev' },
+    { hostname: 'localhost' }, { hostname: 'www.sampsonheavydiesel.com.au' }, { hostname: 'preview.pages.dev' },
     { id: 'G-PLACEHOLDER', clarity: 'bad&id' }, { id: 'UA-1234567-1' }, { id: '', clarity: '' }
   ]) {
     const page = setup({ initialChoice: accepted, ...options });
