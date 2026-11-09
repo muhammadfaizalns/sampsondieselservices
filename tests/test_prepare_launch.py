@@ -117,5 +117,33 @@ class PrepareLaunchTests(unittest.TestCase):
                             if 'scripts/build-production.py' not in call.args))
 
 
+    def test_plausible_is_optional_public_config_and_disabled_on_previews(self):
+        script = 'https://plausible.sampsonheavydiesel.com.au/js/script.js'
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            path = self.config(directory, {'GA4_MEASUREMENT_ID': MEASUREMENT_ID,
+                                           'CLARITY_PROJECT_ID': CLARITY_ID,
+                                           'PLAUSIBLE_SCRIPT_URL': script})
+            self.assertEqual(launch.production_environment({}, path)['PLAUSIBLE_SCRIPT_URL'], script)
+            explicit = {'GA4_MEASUREMENT_ID': '', 'CLARITY_PROJECT_ID': ''}
+            self.assertEqual(launch.production_environment(explicit, path)['PLAUSIBLE_SCRIPT_URL'], script)
+            self.assertEqual(launch.production_environment({'PLAUSIBLE_SCRIPT_URL': ''}, path)
+                             ['PLAUSIBLE_SCRIPT_URL'], '')
+            self.assertEqual(launch.production_environment({'CF_PAGES_BRANCH': 'preview'}, path)
+                             ['PLAUSIBLE_SCRIPT_URL'], '')
+            older = self.config(directory, {'GA4_MEASUREMENT_ID': MEASUREMENT_ID,
+                                            'CLARITY_PROJECT_ID': CLARITY_ID})
+            self.assertEqual(launch.production_environment({}, older)['PLAUSIBLE_SCRIPT_URL'], '')
+            bad = self.config(directory, {'GA4_MEASUREMENT_ID': MEASUREMENT_ID,
+                                          'CLARITY_PROJECT_ID': CLARITY_ID,
+                                          'PLAUSIBLE_SCRIPT_URL': 123})
+            with self.assertRaises(ValueError):
+                launch.production_environment({}, bad)
+
+    def test_repository_config_enables_first_party_plausible(self):
+        value = json.loads((ROOT / 'scripts/production-config.json').read_text())['PLAUSIBLE_SCRIPT_URL']
+        self.assertEqual(production.plausible_settings(value, 'https://sampsonheavydiesel.com.au'), value)
+
+
 if __name__ == '__main__':
     unittest.main()

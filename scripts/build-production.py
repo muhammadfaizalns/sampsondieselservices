@@ -19,6 +19,7 @@ MARKER = '.sampson-production-build'
 ROBOTS = re.compile(r'<meta\b(?=[^>]*\bname\s*=\s*[\"\']robots[\"\'])[^>]*>', re.I)
 GA4_ID = re.compile(r'G-[A-Z0-9]{10}\Z')
 CLARITY_ID = re.compile(r'[a-z0-9]{1,64}\Z')
+PLAUSIBLE_PATH = re.compile(r'/js/[A-Za-z0-9._-]{1,64}\.js\Z')
 STATIC_EXTENSIONS = {
     '.html', '.css', '.js', '.mjs', '.json', '.xml', '.txt', '.glb',
     '.png', '.webp', '.svg', '.jpg', '.jpeg', '.gif', '.avif', '.ico',
@@ -46,6 +47,22 @@ def clarity_settings(value):
     return value
 
 
+def plausible_settings(value, origin):
+    """Plausible must be served over HTTPS from the site's own host or one of its subdomains."""
+    if value in (None, ''):
+        return None
+    if not isinstance(value, str):
+        raise ValueError('PLAUSIBLE_SCRIPT_URL must be a string.')
+    parsed = urlsplit(value)
+    site_host = urlsplit(origin).hostname
+    host = parsed.hostname or ''
+    if (parsed.scheme != 'https' or parsed.username or parsed.password or parsed.port
+            or parsed.query or parsed.fragment or not PLAUSIBLE_PATH.fullmatch(parsed.path)
+            or not (host == site_host or host.endswith('.' + site_host))):
+        raise ValueError('PLAUSIBLE_SCRIPT_URL must be an HTTPS /js/*.js URL on the site host or its subdomain.')
+    return f'https://{host}{parsed.path}'
+
+
 def copy_filter(directory, names):
     ignored = []
     for name in names:
@@ -58,20 +75,21 @@ def copy_filter(directory, names):
     return ignored
 
 
-def security_headers(origin, clarity_enabled=False):
+def security_headers(origin, clarity_enabled=False, plausible_origin=None):
     """Headers target static assets; host redirects are configured separately in Cloudflare."""
+    plausible = ' ' + plausible_origin if plausible_origin else ''
     clarity_scripts = ' https://www.clarity.ms https://scripts.clarity.ms' if clarity_enabled else ''
     clarity_connections = ' https://*.clarity.ms' if clarity_enabled else ''
     clarity_images = ' https://*.clarity.ms https://c.bing.com' if clarity_enabled else ''
     csp = '; '.join([
         "default-src 'self'",
-        "script-src 'self' 'wasm-unsafe-eval' https://static.cloudflareinsights.com https://www.googletagmanager.com" + clarity_scripts,
+        "script-src 'self' 'wasm-unsafe-eval' https://static.cloudflareinsights.com https://www.googletagmanager.com" + clarity_scripts + plausible,
         "script-src-attr 'none'",
         "style-src 'self'",
         "style-src-attr 'none'",
         "img-src 'self' data: blob: https://*.google-analytics.com" + clarity_images,
         "font-src 'self'",
-        "connect-src 'self' blob: https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com" + clarity_connections,
+        "connect-src 'self' blob: https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com" + clarity_connections + plausible,
         "media-src 'self'",
         "manifest-src 'self'",
         "worker-src 'none'",
@@ -115,10 +133,14 @@ https://:version.:worker.:account.workers.dev/*
 
 
 def rewrite_html(source, previous_origin, origin, not_found=False, measurement_id=None,
-                 clarity_id=None, public_paths=None):
+                 clarity_id=None, public_paths=None, plausible_script=None):
     rendered = ROBOTS.sub('', source.replace(previous_origin, origin))
     indexing = 'noindex, follow' if not_found else 'index, follow, max-image-preview:large'
     additions = f'<meta name="robots" content="{indexing}">'
+    if plausible_script:
+        domain = html.escape(urlsplit(origin).hostname, quote=True)
+        additions += (f'<script defer data-domain="{domain}" '
+                      f'src="{html.escape(plausible_script, quote=True)}"></script>')
     if measurement_id or clarity_id:
         host = html.escape(urlsplit(origin).hostname, quote=True)
         provider_attributes = ''
@@ -230,11 +252,12 @@ def validate(output, origin, previous_origin, active_models):
 
 def build(source, output, site_url=DEFAULT_ORIGIN, measurement_id=None,
           privacy_template=None, google_privacy_template=None, clarity_id=None,
-          clarity_privacy_template=None):
+          clarity_privacy_template=None, plausible_script=None):
     source, output = Path(source).resolve(), Path(output).resolve()
     origin = normalize_origin(site_url)
     measurement_id = measurement_settings(measurement_id)
     clarity_id = clarity_settings(clarity_id)
+    plausible_script = plausible_settings(plausible_script, origin)
     if source == output or source in output.parents or output in source.parents:
         raise ValueError('Output must be separate from the source directory.')
     metadata = HomeMetadata((source / 'index.html').read_text())
@@ -268,6 +291,17 @@ def build(source, output, site_url=DEFAULT_ORIGIN, measurement_id=None,
             clarity_notice = clarity_privacy_template
         else:
             clarity_notice = '<h2>Microsoft Clarity</h2><p>Microsoft Clarity session replay is not enabled on this website.</p>'
+        if plausible_script:
+            plausible_host = html.escape(urlsplit(plausible_script).hostname)
+            google_notice = (
+                '<h2>Plausible Analytics</h2><p>Plausible Analytics, served for this website from '
+                f'{plausible_host}, counts page views, the page that referred you, browser, '
+                'operating system, device type and country. It does not use cookies or store '
+                'anything on your device, does not track you across websites and does not collect '
+                'personal information. Your IP address is used only to create an anonymous visitor '
+                'count that changes daily and is not stored. These counts can be incomplete when '
+                'scripts are blocked. <a href="https://plausible.io/data-policy">Read Plausible’s '
+                'data policy</a>.</p>' + google_notice)
         privacy_content = (privacy_template.replace('{{GOOGLE_ANALYTICS_NOTICE}}', google_notice)
                            .replace('{{CLARITY_NOTICE}}', clarity_notice))
     if output.exists():
@@ -294,14 +328,16 @@ def build(source, output, site_url=DEFAULT_ORIGIN, measurement_id=None,
                     raise ValueError('Privacy page is missing its legal content container.')
             path.write_text(rewrite_html(source_html, previous_origin, origin,
                                         is_not_found(path.relative_to(output)), measurement_id,
-                                        clarity_id, public_paths))
+                                        clarity_id, public_paths, plausible_script))
         elif path.suffix == '.xml':
             path.write_text(path.read_text().replace(previous_origin, origin))
     (output / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {origin}/sitemap.xml\n')
-    (output / '_headers').write_text(security_headers(origin, bool(clarity_id)))
+    plausible_origin = 'https://' + urlsplit(plausible_script).hostname if plausible_script else None
+    (output / '_headers').write_text(security_headers(origin, bool(clarity_id), plausible_origin))
     result = validate(output, origin, previous_origin, active_models)
     result['ga4'] = 'configured with consent required' if measurement_id else 'disabled'
     result['clarity'] = 'configured with separate consent required' if clarity_id else 'disabled'
+    result['plausible'] = 'configured, cookieless' if plausible_script else 'disabled'
     return result
 
 
@@ -312,4 +348,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(json.dumps(build(ROOT / 'dist', args.output, args.site_url,
                            os.environ.get('GA4_MEASUREMENT_ID'),
-                           clarity_id=os.environ.get('CLARITY_PROJECT_ID'))))
+                           clarity_id=os.environ.get('CLARITY_PROJECT_ID'),
+                           plausible_script=os.environ.get('PLAUSIBLE_SCRIPT_URL'))))
