@@ -42,11 +42,12 @@ test('valid enquiry verifies Turnstile then creates one Odoo lead with mapped fi
   assert.equal(calls[1].url, 'https://erp.sampsonheavydiesel.com.au/json/2/crm.lead/create');
   assert.equal(calls[1].init.headers.Authorization, 'bearer test-odoo-key');
   const values = JSON.parse(calls[1].init.body).vals_list[0];
-  assert.deepEqual(Object.keys(values).sort(), ['contact_name', 'description', 'email_from', 'name', 'phone']);
+  assert.deepEqual(Object.keys(values).sort(), ['contact_name', 'description', 'email_from', 'name', 'phone', 'user_id']);
   assert.equal(values.name, 'Website enquiry: Jane Farmer');
   assert.equal(values.contact_name, 'Jane Farmer');
   assert.equal(values.email_from, 'jane@example.com');
   assert.equal(values.phone, '0400 123 456');
+  assert.equal(values.user_id, false);
   assert.match(values.description, /Tractor losing power/);
   assert.match(values.description, /Equipment: Farm machinery/);
   assert.match(values.description, /Location: Warragul/);

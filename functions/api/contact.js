@@ -69,6 +69,8 @@ export function leadValues(data, page) {
     email_from: data.email,
     phone: data.phone,
     description: lines.join('\n'),
+    // Leave unassigned so the lead is not owned by the restricted website user.
+    user_id: false,
   };
 }
 
