@@ -17,14 +17,23 @@ def production_environment(environment=None, configuration_path=PRODUCTION_CONFI
     if branch is not None and branch != 'main':
         result['GA4_MEASUREMENT_ID'] = ''
         result['CLARITY_PROJECT_ID'] = ''
+        result['PLAUSIBLE_SCRIPT_URL'] = ''
         return result
     missing = [key for key in ('GA4_MEASUREMENT_ID', 'CLARITY_PROJECT_ID') if key not in result]
+    configuration = None
     if missing:
         configuration = json.loads(configuration_path.read_text())
         for key in missing:
             if not isinstance(configuration, dict) or not isinstance(configuration.get(key), str):
                 raise ValueError(f'Public production config must contain a string {key}.')
             result[key] = configuration[key]
+    if 'PLAUSIBLE_SCRIPT_URL' not in result and (configuration is not None or configuration_path.is_file()):
+        if configuration is None:
+            configuration = json.loads(configuration_path.read_text())
+        value = configuration.get('PLAUSIBLE_SCRIPT_URL', '') if isinstance(configuration, dict) else ''
+        if not isinstance(value, str):
+            raise ValueError('Public production config PLAUSIBLE_SCRIPT_URL must be a string.')
+        result['PLAUSIBLE_SCRIPT_URL'] = value
     return result
 
 

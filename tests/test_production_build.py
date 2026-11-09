@@ -311,5 +311,49 @@ class ProductionBuildTests(unittest.TestCase):
         self.assertTrue(all(len(line) <= 2000 for line in headers.splitlines()))
 
 
+    def test_plausible_is_cookieless_on_every_page_with_notice_and_scoped_csp(self):
+        script = 'https://plausible.sampsonheavydiesel.com.au/js/script.js'
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            source = fixture(directory)
+            for plausible in (None, script):
+                with self.subTest(plausible=plausible):
+                    output = directory / 'production'
+                    result = self.build(source, output, plausible_script=plausible)
+                    self.assertEqual(result['plausible'] != 'disabled', bool(plausible))
+                    tag = ('<script defer data-domain="sampsonheavydiesel.com.au" '
+                           f'src="{script}"></script>')
+                    for path in output.rglob('*.html'):
+                        self.assertEqual(path.read_text().count(tag), int(bool(plausible)))
+                    privacy = (output / 'privacy/index.html').read_text()
+                    self.assertEqual('<h2>Plausible Analytics</h2>' in privacy, bool(plausible))
+                    csp = next(line for line in (output / '_headers').read_text().splitlines()
+                               if 'Content-Security-Policy' in line)
+                    directives = dict(part.strip().split(' ', 1) for part in csp.split(':', 1)[1].split(';')
+                                      if ' ' in part.strip())
+                    for name in ('script-src', 'connect-src'):
+                        self.assertEqual('https://plausible.sampsonheavydiesel.com.au' in directives[name],
+                                         bool(plausible))
+                    self.assertNotIn('plausible', directives['img-src'])
+
+    def test_plausible_rejects_foreign_insecure_or_unexpected_urls_before_mutation(self):
+        origin = 'https://sampsonheavydiesel.com.au'
+        self.assertEqual(production.plausible_settings('', origin), None)
+        self.assertEqual(production.plausible_settings(
+            'https://sampsonheavydiesel.com.au/js/script.js', origin),
+            'https://sampsonheavydiesel.com.au/js/script.js')
+        for value in ('http://plausible.sampsonheavydiesel.com.au/js/script.js',
+                      'https://plausible.io/js/script.js',
+                      'https://evilsampsonheavydiesel.com.au/js/script.js',
+                      'https://plausible.sampsonheavydiesel.com.au/js/script.js?x=1',
+                      'https://plausible.sampsonheavydiesel.com.au/js/script.js#x',
+                      'https://user@plausible.sampsonheavydiesel.com.au/js/script.js',
+                      'https://plausible.sampsonheavydiesel.com.au:8443/js/script.js',
+                      'https://plausible.sampsonheavydiesel.com.au/script.js',
+                      'https://plausible.sampsonheavydiesel.com.au/js/"onload.js', 123):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                production.plausible_settings(value, origin)
+
+
 if __name__ == '__main__':
     unittest.main()
