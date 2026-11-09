@@ -1,11 +1,16 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { onRequestPost, onRequest, validate, leadValues } from '../functions/api/contact.js';
+import { onRequestPost, onRequest, validate, leadValues, resetSuburbCache } from '../functions/api/contact.js';
 
 const ORIGIN = 'https://sampsonheavydiesel.com.au';
-const ENV = { ODOO_API_KEY: 'test-odoo-key', TURNSTILE_SECRET: 'test-turnstile-secret' };
+const SUBURBS = [['Bunyip', '3815', 'VIC'], ['Bunyip North', '3815', 'VIC'], ['Warragul', '3820', 'VIC'], ['Abbotsford', '2046', 'NSW']];
+const ASSETS = { fetch: async (url) => {
+  assert.equal(new URL(url).pathname, '/assets/data/au-suburbs.json');
+  return new Response(JSON.stringify(SUBURBS), { status: 200 });
+} };
+const ENV = { ODOO_API_KEY: 'test-odoo-key', TURNSTILE_SECRET: 'test-turnstile-secret', ASSETS };
 const GOOD = {
-  name: 'Jane Farmer', email: 'Jane@Example.com', phone: '0400 123 456', location: 'Warragul',
+  name: 'Jane Farmer', email: 'Jane@Example.com', phone: '0400 123 456', location: 'warragul vic 3820',
   equipment: 'Farm machinery', message: 'Tractor losing power on hills.', 'cf-turnstile-response': 'token-ok',
 };
 
@@ -18,6 +23,7 @@ function request(fields, { origin = ORIGIN, json = true, referer = ORIGIN + '/co
 }
 
 function mockFetch({ human = true, hostname = 'sampsonheavydiesel.com.au', odooStatus = 200, odooBody = [42] } = {}) {
+  resetSuburbCache();
   const calls = [];
   globalThis.fetch = async (url, init) => {
     calls.push({ url: String(url), init });
@@ -42,7 +48,7 @@ test('valid enquiry verifies Turnstile then creates one Odoo lead with mapped fi
   assert.equal(calls[1].url, 'https://erp.sampsonheavydiesel.com.au/json/2/crm.lead/create');
   assert.equal(calls[1].init.headers.Authorization, 'bearer test-odoo-key');
   const values = JSON.parse(calls[1].init.body).vals_list[0];
-  assert.deepEqual(Object.keys(values).sort(), ['contact_name', 'description', 'email_from', 'name', 'phone', 'user_id']);
+  assert.deepEqual(Object.keys(values).sort(), ['city', 'contact_name', 'description', 'email_from', 'name', 'phone', 'user_id', 'zip']);
   assert.equal(values.name, 'Website enquiry: Jane Farmer');
   assert.equal(values.contact_name, 'Jane Farmer');
   assert.equal(values.email_from, 'jane@example.com');
@@ -50,7 +56,9 @@ test('valid enquiry verifies Turnstile then creates one Odoo lead with mapped fi
   assert.equal(values.user_id, false);
   assert.match(values.description, /Tractor losing power/);
   assert.match(values.description, /Equipment: Farm machinery/);
-  assert.match(values.description, /Location: Warragul/);
+  assert.match(values.description, /Location: Warragul VIC 3820/);
+  assert.equal(values.city, 'Warragul');
+  assert.equal(values.zip, '3820');
   assert.match(values.description, /Submitted from: \/contact\//);
 });
 
@@ -133,4 +141,30 @@ test('validation trims control characters and lead values keep the referring pag
   assert.equal(data.name, 'Bob Smith');
   assert.equal(data.email, 'bob@x.com');
   assert.match(leadValues(data, '/services/truck-servicing/').description, /Submitted from: \/services\/truck-servicing\//);
+});
+
+test('location must come from the suburb list when given, and stays optional', async () => {
+  for (const location of ['Warragul', 'Narnia VIC 9999', 'Bunyip VIC 3816']) {
+    const calls = mockFetch();
+    const response = await onRequestPost({ request: request({ ...GOOD, location }), env: ENV });
+    assert.equal(response.status, 422, location);
+    assert.ok((await response.json()).errors.location);
+    assert.equal(calls.length, 0);
+  }
+  let calls = mockFetch();
+  const blank = await onRequestPost({ request: request({ ...GOOD, location: '' }), env: ENV });
+  assert.equal(blank.status, 200);
+  const values = JSON.parse(calls[1].init.body).vals_list[0];
+  assert.equal('city' in values, false);
+  assert.doesNotMatch(values.description, /Location:/);
+
+  calls = mockFetch();
+  const north = await onRequestPost({ request: request({ ...GOOD, location: 'Bunyip North VIC 3815' }), env: ENV });
+  assert.equal(north.status, 200);
+  assert.equal(JSON.parse(calls[1].init.body).vals_list[0].city, 'Bunyip North');
+
+  calls = mockFetch();
+  const { ASSETS: _unused, ...withoutAssets } = ENV;
+  const unchecked = await onRequestPost({ request: request({ ...GOOD, location: 'Bunyip VIC 3815' }), env: withoutAssets });
+  assert.equal(unchecked.status, 200, 'a well formed suburb is accepted if the list cannot be loaded');
 });

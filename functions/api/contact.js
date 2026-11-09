@@ -17,6 +17,28 @@ const DEFAULT_ORIGIN = 'https://sampsonheavydiesel.com.au';
 const MAX_BODY_BYTES = 16 * 1024;
 const EQUIPMENT = new Set(['', 'Truck', 'Heavy equipment', 'Farm machinery', 'Other']);
 const LIMITS = { name: 100, email: 254, phone: 30, location: 120, message: 2000 };
+const SUBURB_PATTERN = /^(.+) (NSW|VIC|QLD|WA|SA|TAS|NT|ACT) (\d{4})$/i;
+let suburbIndex = null;
+
+// The business supplied suburb list is published with the site; load it once per isolate.
+async function loadSuburbs(env, request) {
+  if (suburbIndex) return suburbIndex;
+  if (!env.ASSETS) return null;
+  try {
+    const response = await env.ASSETS.fetch(new URL('/assets/data/au-suburbs.json', request.url));
+    if (!response.ok) return null;
+    const rows = await response.json();
+    suburbIndex = new Map(rows.map(([name, postcode, state]) => [`${name} ${state} ${postcode}`.toLowerCase(),
+      { name, postcode, state, label: `${name} ${state} ${postcode}` }]));
+    return suburbIndex;
+  } catch {
+    return null;
+  }
+}
+
+export function resetSuburbCache() {
+  suburbIndex = null;
+}
 
 function respond(request, status, body, redirect) {
   const wantsJson = (request.headers.get('Accept') || '').includes('application/json');
@@ -54,6 +76,9 @@ export function validate(fields) {
     errors.phone = 'Enter a valid phone number.';
   }
   if (!EQUIPMENT.has(data.equipment)) errors.equipment = 'Choose an equipment type.';
+  if (data.location && !SUBURB_PATTERN.test(data.location)) {
+    errors.location = 'Choose a suburb from the list, or leave this empty.';
+  }
   return { data, errors };
 }
 
@@ -63,7 +88,9 @@ export function leadValues(data, page) {
   if (data.equipment) lines.push('Equipment: ' + data.equipment);
   if (data.location) lines.push('Location: ' + data.location);
   lines.push('Submitted from: ' + page);
+  const suburb = data.suburb;
   return {
+    ...(suburb ? { city: suburb.name, zip: suburb.postcode } : {}),
     name: 'Website enquiry: ' + data.name,
     contact_name: data.name,
     email_from: data.email,
@@ -136,6 +163,18 @@ export async function onRequestPost({ request, env }) {
   }
 
   const { data, errors } = validate(fields);
+  if (data.location && !errors.location) {
+    const index = await loadSuburbs(env, request);
+    if (index) {
+      const match = index.get(data.location.toLowerCase());
+      if (match) {
+        data.location = match.label;
+        data.suburb = match;
+      } else {
+        errors.location = 'Choose a suburb from the list, or leave this empty.';
+      }
+    }
+  }
   if (Object.keys(errors).length) return respond(request, 422, { ok: false, errors }, failure);
 
   const token = clean(fields['cf-turnstile-response'], 2048);
