@@ -355,5 +355,35 @@ class ProductionBuildTests(unittest.TestCase):
                 production.plausible_settings(value, origin)
 
 
+    def test_turnstile_site_key_enables_contact_form_and_scoped_csp_only_when_configured(self):
+        key = '0x4AAAAAAAexampleSiteKey'
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            source = fixture(directory)
+            page = source / 'services/index.html'
+            page.write_text(page.read_text().replace(
+                '</body>', '<form class="contact-form" id="contact-form" method="post" data-sitekey=""></form></body>'))
+            for site_key in (None, key):
+                with self.subTest(site_key=site_key):
+                    output = directory / 'production'
+                    result = self.build(source, output, turnstile_site_key=site_key)
+                    self.assertEqual(result['contact_form'].startswith('enabled'), bool(site_key))
+                    built = (output / 'services/index.html').read_text()
+                    self.assertIn(f'data-sitekey="{site_key or ""}"', built)
+                    headers = (output / '_headers').read_text()
+                    self.assertEqual('https://challenges.cloudflare.com' in headers, bool(site_key))
+                    self.assertEqual("frame-src 'none'" in headers, not site_key)
+                    self.assertNotIn('TURNSTILE_SECRET', built + headers)
+            self.assertIn('data-sitekey=""', page.read_text())
+        for bad in ('1x00000000000000000000AA', 'secret', '0x"onload', 123):
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                production.turnstile_settings(bad)
+
+    def test_repository_privacy_template_describes_form_only_when_enabled(self):
+        template = (ROOT / 'scripts/production-privacy.html').read_text()
+        self.assertIn('This website has no online enquiry form', template)
+        self.assertIn('<h2>Hosting and performance</h2>', template)
+
+
 if __name__ == '__main__':
     unittest.main()

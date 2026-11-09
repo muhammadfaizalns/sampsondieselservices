@@ -18,6 +18,7 @@ def production_environment(environment=None, configuration_path=PRODUCTION_CONFI
         result['GA4_MEASUREMENT_ID'] = ''
         result['CLARITY_PROJECT_ID'] = ''
         result['PLAUSIBLE_SCRIPT_URL'] = ''
+        result['TURNSTILE_SITE_KEY'] = ''
         return result
     missing = [key for key in ('GA4_MEASUREMENT_ID', 'CLARITY_PROJECT_ID') if key not in result]
     configuration = None
@@ -27,13 +28,15 @@ def production_environment(environment=None, configuration_path=PRODUCTION_CONFI
             if not isinstance(configuration, dict) or not isinstance(configuration.get(key), str):
                 raise ValueError(f'Public production config must contain a string {key}.')
             result[key] = configuration[key]
-    if 'PLAUSIBLE_SCRIPT_URL' not in result and (configuration is not None or configuration_path.is_file()):
+    for key in ('PLAUSIBLE_SCRIPT_URL', 'TURNSTILE_SITE_KEY'):
+        if key in result or (configuration is None and not configuration_path.is_file()):
+            continue
         if configuration is None:
             configuration = json.loads(configuration_path.read_text())
-        value = configuration.get('PLAUSIBLE_SCRIPT_URL', '') if isinstance(configuration, dict) else ''
+        value = configuration.get(key, '') if isinstance(configuration, dict) else ''
         if not isinstance(value, str):
-            raise ValueError('Public production config PLAUSIBLE_SCRIPT_URL must be a string.')
-        result['PLAUSIBLE_SCRIPT_URL'] = value
+            raise ValueError(f'Public production config {key} must be a string.')
+        result[key] = value
     return result
 
 
@@ -48,6 +51,8 @@ def main():
     for name in ('components.js', 'coverage.js', 'gearbox-loader.js', 'gearbox.js', 'motion.js', 'analytics.js'):
         run('node', '--check', 'dist/' + name)
     run('node', '--test', 'tests/test_analytics.mjs')
+    run('node', '--test', 'tests/test_contact_function.mjs')
+    run('node', '--check', 'dist/contact.js')
     run(sys.executable, 'scripts/build-production.py', '--site-url', SITE_URL,
         env=production_environment())
     run(sys.executable, 'scripts/audit-search-readiness.py', '--directory', '_production',
