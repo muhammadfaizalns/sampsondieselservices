@@ -33,7 +33,7 @@ class PagesBuildTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             output = Path(temporary) / 'review'
             result = pages.build(source, output, 'https://muhammadfaizalns.github.io/sampsondieselservices/')
-            self.assertEqual(result['html_files'], 15)
+            self.assertEqual(result['html_files'], 16)
             self.assertEqual(result['models'], 10)
             service_index = (output / 'services/index.html').read_text()
             self.assertIn('/sampsondieselservices/services/heavy-equipment-servicing/', service_index)

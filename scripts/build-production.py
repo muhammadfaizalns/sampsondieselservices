@@ -19,6 +19,7 @@ MARKER = '.sampson-production-build'
 ROBOTS = re.compile(r'<meta\b(?=[^>]*\bname\s*=\s*[\"\']robots[\"\'])[^>]*>', re.I)
 GA4_ID = re.compile(r'G-[A-Z0-9]{10}\Z')
 CLARITY_ID = re.compile(r'[a-z0-9]{1,64}\Z')
+TURNSTILE_SITE_KEY = re.compile(r'0x[A-Za-z0-9_-]{8,64}\Z')
 PLAUSIBLE_PATH = re.compile(r'/js/[A-Za-z0-9._-]{1,64}\.js\Z')
 STATIC_EXTENSIONS = {
     '.html', '.css', '.js', '.mjs', '.json', '.xml', '.txt', '.glb',
@@ -44,6 +45,15 @@ def clarity_settings(value):
         return None
     if not isinstance(value, str) or not CLARITY_ID.fullmatch(value):
         raise ValueError('CLARITY_PROJECT_ID must contain 1 to 64 lowercase letters or digits.')
+    return value
+
+
+def turnstile_settings(value):
+    """Turnstile site keys are public widget identifiers; secrets never enter the build."""
+    if value in (None, ''):
+        return None
+    if not isinstance(value, str) or not TURNSTILE_SITE_KEY.fullmatch(value):
+        raise ValueError('TURNSTILE_SITE_KEY must be a public Turnstile site key starting with 0x.')
     return value
 
 
@@ -75,15 +85,16 @@ def copy_filter(directory, names):
     return ignored
 
 
-def security_headers(origin, clarity_enabled=False, plausible_origin=None):
+def security_headers(origin, clarity_enabled=False, plausible_origin=None, turnstile_enabled=False):
     """Headers target static assets; host redirects are configured separately in Cloudflare."""
     plausible = ' ' + plausible_origin if plausible_origin else ''
+    turnstile = ' https://challenges.cloudflare.com' if turnstile_enabled else ''
     clarity_scripts = ' https://www.clarity.ms https://scripts.clarity.ms' if clarity_enabled else ''
     clarity_connections = ' https://*.clarity.ms' if clarity_enabled else ''
     clarity_images = ' https://*.clarity.ms https://c.bing.com' if clarity_enabled else ''
     csp = '; '.join([
         "default-src 'self'",
-        "script-src 'self' 'wasm-unsafe-eval' https://static.cloudflareinsights.com https://www.googletagmanager.com" + clarity_scripts + plausible,
+        "script-src 'self' 'wasm-unsafe-eval' https://static.cloudflareinsights.com https://www.googletagmanager.com" + clarity_scripts + plausible + turnstile,
         "script-src-attr 'none'",
         "style-src 'self'",
         "style-src-attr 'none'",
@@ -94,7 +105,7 @@ def security_headers(origin, clarity_enabled=False, plausible_origin=None):
         "manifest-src 'self'",
         "worker-src 'none'",
         "object-src 'none'",
-        "frame-src 'none'",
+        ("frame-src https://challenges.cloudflare.com" if turnstile_enabled else "frame-src 'none'"),
         "frame-ancestors 'none'",
         "base-uri 'self'",
         "form-action 'self'",
@@ -252,12 +263,13 @@ def validate(output, origin, previous_origin, active_models):
 
 def build(source, output, site_url=DEFAULT_ORIGIN, measurement_id=None,
           privacy_template=None, google_privacy_template=None, clarity_id=None,
-          clarity_privacy_template=None, plausible_script=None):
+          clarity_privacy_template=None, plausible_script=None, turnstile_site_key=None):
     source, output = Path(source).resolve(), Path(output).resolve()
     origin = normalize_origin(site_url)
     measurement_id = measurement_settings(measurement_id)
     clarity_id = clarity_settings(clarity_id)
     plausible_script = plausible_settings(plausible_script, origin)
+    turnstile_site_key = turnstile_settings(turnstile_site_key)
     if source == output or source in output.parents or output in source.parents:
         raise ValueError('Output must be separate from the source directory.')
     metadata = HomeMetadata((source / 'index.html').read_text())
@@ -302,6 +314,22 @@ def build(source, output, site_url=DEFAULT_ORIGIN, measurement_id=None,
                 'count that changes daily and is not stored. These counts can be incomplete when '
                 'scripts are blocked. <a href="https://plausible.io/data-policy">Read Plausible’s '
                 'data policy</a>.</p>' + google_notice)
+        if turnstile_site_key:
+            form_notice = (
+                '<h2>Online enquiry form</h2><p>The enquiry form on the contact page sends your name, '
+                'email, phone number and any location, equipment and message details you enter to '
+                'Sampson Heavy Diesel Services. They are stored in the business customer system (Odoo) '
+                'so Clive can reply and keep a record of the enquiry. They are not sold or used for '
+                'advertising. To ask about, correct or delete an enquiry, call Clive on '
+                '<a href="tel:+61474372852">0474 372 852</a>.</p><p>Cloudflare Turnstile checks that '
+                'the form is sent by a person rather than an automated program. It processes technical '
+                'browser signals for that check and does not show advertising. Read '
+                '<a href="https://www.cloudflare.com/turnstile-privacy-policy/" rel="noopener" '
+                'target="_blank">Cloudflare\u2019s Turnstile privacy information</a>.</p>')
+            privacy_template = (privacy_template
+                                .replace('This website has no online enquiry form, customer account or payment checkout.',
+                                         'This website has no customer account or payment checkout.')
+                                .replace('<h2>Hosting and performance</h2>', form_notice + '<h2>Hosting and performance</h2>', 1))
         privacy_content = (privacy_template.replace('{{GOOGLE_ANALYTICS_NOTICE}}', google_notice)
                            .replace('{{CLARITY_NOTICE}}', clarity_notice))
     if output.exists():
@@ -326,18 +354,23 @@ def build(source, output, site_url=DEFAULT_ORIGIN, measurement_id=None,
                     source_html, count=1, flags=re.S)
                 if replacements != 1:
                     raise ValueError('Privacy page is missing its legal content container.')
+            if turnstile_site_key and 'id="contact-form"' in source_html:
+                source_html = source_html.replace('data-sitekey=""', f'data-sitekey="{turnstile_site_key}"', 1)
             path.write_text(rewrite_html(source_html, previous_origin, origin,
                                         is_not_found(path.relative_to(output)), measurement_id,
                                         clarity_id, public_paths, plausible_script))
         elif path.suffix == '.xml':
             path.write_text(path.read_text().replace(previous_origin, origin))
+    # Only the enquiry endpoint runs as a Pages Function; every other request stays static.
+    (output / '_routes.json').write_text(json.dumps({'version': 1, 'include': ['/api/*'], 'exclude': []}) + '\n')
     (output / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {origin}/sitemap.xml\n')
     plausible_origin = 'https://' + urlsplit(plausible_script).hostname if plausible_script else None
-    (output / '_headers').write_text(security_headers(origin, bool(clarity_id), plausible_origin))
+    (output / '_headers').write_text(security_headers(origin, bool(clarity_id), plausible_origin, bool(turnstile_site_key)))
     result = validate(output, origin, previous_origin, active_models)
     result['ga4'] = 'configured with consent required' if measurement_id else 'disabled'
     result['clarity'] = 'configured with separate consent required' if clarity_id else 'disabled'
     result['plausible'] = 'configured, cookieless' if plausible_script else 'disabled'
+    result['contact_form'] = 'enabled with Turnstile' if turnstile_site_key else 'disabled until a Turnstile site key is configured'
     return result
 
 
@@ -349,4 +382,5 @@ if __name__ == '__main__':
     print(json.dumps(build(ROOT / 'dist', args.output, args.site_url,
                            os.environ.get('GA4_MEASUREMENT_ID'),
                            clarity_id=os.environ.get('CLARITY_PROJECT_ID'),
-                           plausible_script=os.environ.get('PLAUSIBLE_SCRIPT_URL'))))
+                           plausible_script=os.environ.get('PLAUSIBLE_SCRIPT_URL'),
+                           turnstile_site_key=os.environ.get('TURNSTILE_SITE_KEY'))))
